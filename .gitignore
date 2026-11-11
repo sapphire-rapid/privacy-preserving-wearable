@@ -1,0 +1,30 @@
+# RIOT / embedded build artifacts
+bin/
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.d
+*.a
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs / data dumps
+*.csv
+!**/sample_*.csv
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
