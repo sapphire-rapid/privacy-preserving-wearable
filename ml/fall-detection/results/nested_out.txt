@@ -1,0 +1,26 @@
+BOOT
+START
+held ['SA04', 'SA09']... chosen thr=0.94 std=0.08 conf=3.0
+  saved D:\Amritha\SEM 3\TinyCNN- IoT Project\New Approach Kaggle\FallDetect\results\nested_fold_0.json
+held ['SA03', 'SA08']... chosen thr=0.95 std=0.08 conf=3.0
+  saved D:\Amritha\SEM 3\TinyCNN- IoT Project\New Approach Kaggle\FallDetect\results\nested_fold_1.json
+held ['SA02', 'SA07']... chosen thr=0.94 std=0.08 conf=3.0
+  saved D:\Amritha\SEM 3\TinyCNN- IoT Project\New Approach Kaggle\FallDetect\results\nested_fold_2.json
+held ['SA01', 'SA06']... chosen thr=0.93 std=0.08 conf=3.0
+  saved D:\Amritha\SEM 3\TinyCNN- IoT Project\New Approach Kaggle\FallDetect\results\nested_fold_3.json
+held ['SA05', 'SA10']... chosen thr=0.93 std=0.05 conf=3.0
+  saved D:\Amritha\SEM 3\TinyCNN- IoT Project\New Approach Kaggle\FallDetect\results\nested_fold_4.json
+
+Chosen params per fold:
+  fold 0: thr=0.94 std=0.08 conf=3.0
+  fold 1: thr=0.95 std=0.08 conf=3.0
+  fold 2: thr=0.94 std=0.08 conf=3.0
+  fold 3: thr=0.93 std=0.08 conf=3.0
+  fold 4: thr=0.93 std=0.05 conf=3.0
+
+========== NESTED (honest) RESULT ==========
+Fall recall: 1706/1798 = 0.9488
+ADL FAR: 264/2702 = 0.0977
+False alarms/hour: 18.2058
+Elderly (SE) ADL FAR: 0.0291
+Saved results/nested_result.txt

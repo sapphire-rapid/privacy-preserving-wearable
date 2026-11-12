@@ -1,0 +1,5 @@
+threshold=0.9800
+recall=0.9566
+adl_far=0.2295
+fa_per_hour=42.7577
+se_adl_far=0.1265

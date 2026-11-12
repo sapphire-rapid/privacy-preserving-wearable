@@ -1,0 +1,4 @@
+fall_recall=0.9488
+adl_far=0.0977
+fa_per_hour=18.2058
+se_adl_far=0.0291

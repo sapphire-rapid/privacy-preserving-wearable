@@ -1,0 +1,7 @@
+prob_thr=0.93
+STD_THR=0.05
+CONFIRM_LEN=3.0
+fall_recall=0.9533
+adl_far=0.1029
+fa_per_hour=19.1713
+se_adl_far=0.0325

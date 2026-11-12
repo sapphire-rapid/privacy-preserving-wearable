@@ -28,3 +28,6 @@ venv/
 Thumbs.db
 .vscode/
 *.swp
+
+# Small, curated result tables (not raw data) — keep these
+!ml/fall-detection/results/*.csv
