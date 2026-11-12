@@ -11,4 +11,3 @@ RIOT custom applications for the wearable nodes and relay, kept outside the pris
 
 Build each with RIOTBASE pointing at a separate RIOT checkout (see docs/INSTALLATION.md). Flash rule: always pass UF2_SOFTDEV=DROP.
 
-> Populate this folder with the current contents of ~/riotproject-apps/ on the dev machine.
