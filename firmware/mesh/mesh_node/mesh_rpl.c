@@ -30,7 +30,9 @@ bool mesh_rpl_joined(void)
     if (inst == NULL) {
         return false;
     }
-    return (inst->dodag.node_status == GNRC_RPL_ROOT_NODE) ||
+    /* A wearable is never a legitimate root: "root" here can only mean a
+     * floating DODAG, which has no path to the BR. Joined = has a parent. */
+    return (inst->dodag.node_status != GNRC_RPL_ROOT_NODE) &&
            (inst->dodag.parents != NULL);
 }
 

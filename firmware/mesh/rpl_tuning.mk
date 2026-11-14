@@ -17,6 +17,13 @@ CFLAGS += -DCONFIG_IEEE802154_DEFAULT_TXPOWER=8
 CFLAGS += -DCONFIG_GNRC_RPL_DEFAULT_DIO_INTERVAL_MIN=10
 CFLAGS += -DCONFIG_GNRC_RPL_DEFAULT_DIO_INTERVAL_DOUBLINGS=5
 
+# --- No floating DODAGs ---------------------------------------------------------
+# RIOT default: a node that loses its last parent declares itself root of a
+# "floating" DODAG (rank 256) for 15 min (_float_dodag() in gnrc_rpl_dodag.c).
+# Other nodes then join it and their traffic dead-ends: no path to the BR.
+# Seen in the 2026-11-13 range test. 0 = never float; poison routes and rejoin.
+CFLAGS += -DCONFIG_GNRC_RPL_DODAG_FLOAT_TIMEOUT=0
+
 # --- Route / parent lifetime ----------------------------------------------------
 # Route lifetime = DEFAULT_LIFETIME * LIFETIME_UNIT seconds (RIOT default 5*60 = 300 s).
 # A parent that stops sending DIOs is probed after (LIFETIME-1)*UNIT s.
