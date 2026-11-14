@@ -10,7 +10,9 @@ State (loss, sessions) is kept PER SOURCE ADDRESS, so the HR node and the relay
 heartbeats never corrupt each other's numbers.
 
 Type a number + Enter to tag following rows with a distance (metres) for
-walk tests. Type 't' + Enter to print the per-node table.
+walk tests. Type 't' + Enter to print the per-node table. Any other text
+(e.g. "relay2 off") is logged as an EVENT row with a timestamp, for measuring
+recovery times.
 """
 import csv
 import socket
@@ -80,6 +82,8 @@ class Node:
 nodes = {}
 lock = threading.Lock()
 distance = None
+writer = None
+csv_file = None
 
 
 def print_table():
@@ -105,7 +109,11 @@ def stdin_thread():
         try:
             d = float(line)
         except ValueError:
-            print(f"  (ignored '{line}': number = distance tag, 't' = table)")
+            with lock:
+                writer.writerow([f"{time.time():.3f}", "EVENT", "", distance, "", "", "",
+                                 "", "", "", line])
+                csv_file.flush()
+            print(f"  >> EVENT logged: {line}  ({time.strftime('%H:%M:%S')})")
             continue
         with lock:
             distance = d
@@ -117,11 +125,12 @@ def main():
     sock.bind(("::", LISTEN_PORT))
     print(f"mesh_server listening on [::]:{LISTEN_PORT}  (number=distance tag, t=table)")
 
-    f = open(CSV_PATH, "a", newline="")
-    w = csv.writer(f)
+    global writer, csv_file
+    f = csv_file = open(CSV_PATH, "a", newline="")
+    w = writer = csv.writer(f)
     if f.tell() == 0:
         w.writerow(["timestamp", "src_addr", "session", "distance_m", "seq", "bpm",
-                    "rank", "hops", "window_loss_pct", "session_loss_pct"])
+                    "rank", "hops", "window_loss_pct", "session_loss_pct", "event"])
         f.flush()
 
     threading.Thread(target=stdin_thread, daemon=True).start()
@@ -151,8 +160,9 @@ def main():
         dist = f"{d}m" if d is not None else "?"
         print(f"[RX {n.short:>4} {n.role():>8}] seq={seq} bpm={bpm} rank={rank} "
               f"hops={n.hops()} win_loss={wl:.1f}% sess_loss={sl:.1f}% dist={dist}")
-        w.writerow(row)
-        f.flush()
+        with lock:
+            w.writerow(row + [""])
+            f.flush()
 
 
 if __name__ == "__main__":
