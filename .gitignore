@@ -31,3 +31,6 @@ Thumbs.db
 
 # Small, curated result tables (not raw data) — keep these
 !ml/fall-detection/results/*.csv
+
+# MkDocs build output
+site/

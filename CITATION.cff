@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Edge-Intelligent Health Monitoring over Adaptive Low-Power and Lossy Networks: privacy-preserving wearable IoT mesh"
+type: software
+authors:
+  - given-names: Tanush Adithiya
+    family-names: G
+    affiliation: "Amrita School of Computing, Amrita Vishwa Vidyapeetham, Coimbatore, India"
+repository-code: "https://github.com/sapphire-rapid/privacy-preserving-wearable"
+url: "https://sapphire-rapid.github.io/privacy-preserving-wearable/"
+license: MIT
+version: "1.0.0"
+date-released: "2026-11-18"
+keywords:
+  - wearable
+  - RPL
+  - 6LoWPAN
+  - IEEE 802.15.4
+  - RIOT OS
+  - TinyML
+  - fall detection
+  - nRF52840
