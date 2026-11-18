@@ -949,7 +949,7 @@
 <li>Verified live against the border router's routing table and a <code>tcpdump</code> capture on the Pi 4.</li>
 </ul>
 <h2 id="radio-range-single-hop">Radio range (single hop)<a class="headerlink" href="#radio-range-single-hop" title="Permanent link">&para;</a></h2>
-<p>Conditions: XIAO nRF52840 Sense on battery, +8 dBm TX on both ends, on-board chip antennas, node held away from the body, line of sight.</p>
+<p>Two campaigns at 1 packet/s with server-side loss tracking, on-board chip antennas. Campaign A: clear line of sight, node USB-tethered to a laptop. Campaign B: outdoor open field. The two are not directly comparable.</p>
 <table>
 <thead>
 <tr>
@@ -959,15 +959,15 @@
 </thead>
 <tbody>
 <tr>
-<td>5 m</td>
+<td>5 m (campaign A)</td>
 <td>about 4–5%</td>
 </tr>
 <tr>
-<td>25 m</td>
+<td>25 m (campaign A)</td>
 <td>about 13–17%</td>
 </tr>
 <tr>
-<td>55 m (open field, ceiling)</td>
+<td>about 55 m (campaign B, farthest distance tested)</td>
 <td>50–60%</td>
 </tr>
 </tbody>
@@ -976,7 +976,7 @@
 <div class="admonition note">
 <p class="admonition-title">Lessons from field testing</p>
 <ul>
-<li>A USB-tethered node browns out and resets when the cable is pulled, so every range test runs on battery.</li>
+<li>A USB-tethered node browns out and resets when the cable is pulled, so the node now runs on its own battery.</li>
 <li>At 2.4 GHz, a hand or the wearer's body, or a nearby laptop chassis, can cut the link completely. Mount the node away from both.</li>
 </ul>
 </div>

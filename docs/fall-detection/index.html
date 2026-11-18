@@ -925,7 +925,7 @@
 
 
 <h1 id="fall-detection-on-node-edge-ai">Fall detection (on-node edge AI)<a class="headerlink" href="#fall-detection-on-node-edge-ai" title="Permanent link">&para;</a></h1>
-<p>The wearable decides on its own whether a fall happened. Only the resulting alert travels over the mesh.</p>
+<p>The detector is designed to run on the wearable, so only the resulting alert travels over the mesh. Today it is exported to C and verified against the Python reference on the host; validation on the band itself is the next step.</p>
 <h2 id="pipeline">Pipeline<a class="headerlink" href="#pipeline" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph LR
     A["LSM6DS3TR-C&lt;br/&gt;52 Hz, ±16 g"] --&gt; B["2 s window&lt;br/&gt;(104 samples)"]

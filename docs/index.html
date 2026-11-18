@@ -940,7 +940,7 @@
 
 
 <h1 id="edge-intelligent-health-monitoring-over-adaptive-low-power-and-lossy-networks">Edge-Intelligent Health Monitoring over Adaptive Low-Power and Lossy Networks<a class="headerlink" href="#edge-intelligent-health-monitoring-over-adaptive-low-power-and-lossy-networks" title="Permanent link">&para;</a></h1>
-<p><strong>A privacy-preserving wearable IoT mesh.</strong> Wrist-worn nodes measure heart rate, detect falls on the device itself, and report over a self-organizing IEEE 802.15.4 / 6LoWPAN / RPL mesh built on RIOT OS. The site needs no cloud, and raw physiological data never leaves it.</p>
+<p><strong>A privacy-preserving wearable IoT mesh.</strong> Wrist-worn nodes measure heart rate, carry an embedded fall detector, and report over a self-organizing IEEE 802.15.4 / 6LoWPAN / RPL mesh built on RIOT OS. The site needs no cloud, and raw physiological data never leaves it.</p>
 <p><a class="md-button md-button--primary" href="https://sapphire-rapid.github.io/privacy-preserving-wearable/">Back to the project site</a> <a class="md-button" href="https://github.com/sapphire-rapid/privacy-preserving-wearable">View the code on GitHub</a></p>
 <hr />
 <h2 id="the-problem">The problem<a class="headerlink" href="#the-problem" title="Permanent link">&para;</a></h2>
@@ -970,11 +970,11 @@
 <tbody>
 <tr>
 <td><strong>End-to-end</strong></td>
-<td>Node → RPL mesh → border router → Pi 4 → ACK back to the node, with RPL rank and packet loss in every packet</td>
+<td>Node → RPL mesh → border router → Pi 4 → ACK back to the node, with the RPL rank in every packet and packet loss tracked per node</td>
 </tr>
 <tr>
 <td><strong>Range</strong></td>
-<td>55 m open-field ceiling at +8 dBm with on-board chip antennas</td>
+<td>Link still up at about 55 m outdoors (50–60% loss), the farthest distance tested, at +8 dBm with on-board chip antennas</td>
 </tr>
 <tr>
 <td><strong>Fall detection</strong></td>
