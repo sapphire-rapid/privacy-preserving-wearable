@@ -31,7 +31,7 @@
   <div class="hero-text">
     <h1>Health monitoring that never leaves the building.</h1>
     <div class="hero-side">
-    <p class="lede">Wristbands measure heart rate and detect falls on the band itself. Readings travel from one wearer's band to the next until they reach a gateway at the nurse station. Nothing goes to the cloud, and no raw health data leaves the site.</p>
+    <p class="lede">Wristbands measure heart rate and carry a fall detector small enough to run on the band itself. Readings travel from one wearer's band to the next until they reach a gateway at the nurse station. Nothing goes to the cloud, and no raw health data leaves the site.</p>
     <p class="actions">
       <a class="btn btn-solid" href="docs/">Read the documentation</a>
       <a class="btn btn-line" href="https://github.com/sapphire-rapid/privacy-preserving-wearable">View the code on GitHub</a>
@@ -139,8 +139,8 @@
 
 <section class="falls" id="falls" aria-labelledby="falls-h">
   <div class="falls-text">
-    <h2 id="falls-h">Fall detection runs on the band</h2>
-    <p>Every 2 seconds the band condenses its accelerometer data into 9 numbers: how hard the impact was, how sudden, how long the wrist was nearly weightless, and how much its tilt changed. A logistic-regression model, nine weights and a bias, decides whether that looked like a fall. Only the result travels over the network.</p>
+    <h2 id="falls-h">Fall detection sized for the band</h2>
+    <p>Every 2 seconds the band condenses its accelerometer data into 9 numbers: how hard the impact was, how sudden, how long the wrist was nearly weightless, and how much its tilt changed. A logistic-regression model, nine weights and a bias, decides whether that looked like a fall, so only the result has to travel over the network. The detector is written in plain C and matches the Python reference exactly on the host; running it on live wrist data is the next step.</p>
     <p>The model was trained and tested on SisFall, about 4,500 recorded falls and everyday activities from 38 people aged 19 to 75. Move the threshold to see the trade-off it has to make.</p>
   </div>
   <div class="falls-fig">
@@ -159,10 +159,10 @@
 
 <section class="range" id="range" aria-labelledby="range-h">
   <h2 id="range-h">How far one hop reaches</h2>
-  <p>Measured with one band on battery, in line of sight, at the radio's maximum of +8 dBm, using the small chip antennas the boards ship with. Loss rises gradually with distance rather than cutting out, so a band that is out of reach simply routes through a nearer one.</p>
+  <p>Two single-hop campaigns at the radio's maximum of +8 dBm, with the small chip antennas the boards ship with: close range in line of sight with the band tethered to a laptop, and an outdoor open-field test. Loss rises with distance rather than cutting out, which is why the mesh relays through nearer bands instead of relying on one long link.</p>
   <figure class="range-fig">
     <svg viewBox="0 0 1000 190" role="img" aria-labelledby="rg-t">
-      <title id="rg-t">Packet loss by distance: 4 to 5 percent at 5 metres, 13 to 17 percent at 25 metres, 50 to 60 percent at 55 metres in open field</title>
+      <title id="rg-t">Packet loss by distance: 4 to 5 percent at 5 metres, 13 to 17 percent at 25 metres, 50 to 60 percent at about 55 metres outdoors, the farthest distance tested</title>
       <g class="dim">
         <line x1="50" y1="120" x2="955" y2="120"/>
         <line x1="50" y1="96" x2="50" y2="150"/>
@@ -178,8 +178,8 @@
       <text class="rd" x="132" y="80" text-anchor="middle">4–5% lost</text>
       <text class="rm" x="461" y="176" text-anchor="middle">25 m</text>
       <text class="rd" x="461" y="80" text-anchor="middle">13–17% lost</text>
-      <text class="rm" x="955" y="176" text-anchor="end">55 m, open field</text>
-      <text class="rd" x="955" y="80" text-anchor="end">50–60% lost, the practical ceiling</text>
+      <text class="rm" x="955" y="176" text-anchor="end">about 55 m, outdoors</text>
+      <text class="rd" x="955" y="80" text-anchor="end">50–60% lost, the farthest distance tested</text>
     </svg>
   </figure>
 </section>
@@ -190,9 +190,9 @@
     <div>
       <h3>Working now</h3>
       <ul>
-        <li>Readings travel from band to gateway, and acknowledgements come back, with every band reporting its rank and packet loss</li>
+        <li>Readings travel from band to gateway and acknowledgements come back, with every packet carrying the band's RPL rank</li>
         <li>A heart-rate driver for the MAX30102, written for RIOT OS</li>
-        <li>55 m single-hop range in open field</li>
+        <li>Single-hop link measured out to about 55 m outdoors</li>
         <li>A fall model validated on SisFall and exported to C for the band</li>
         <li>Gateway firmware that configures itself on boot</li>
       </ul>

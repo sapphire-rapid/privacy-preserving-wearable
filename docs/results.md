@@ -8,18 +8,18 @@
 
 ## Radio range (single hop)
 
-Conditions: XIAO nRF52840 Sense on battery, +8 dBm TX on both ends, on-board chip antennas, node held away from the body, line of sight.
+Two campaigns at 1 packet/s with server-side loss tracking, on-board chip antennas. Campaign A: clear line of sight, node USB-tethered to a laptop. Campaign B: outdoor open field. The two are not directly comparable.
 
 | Distance | Packet loss |
 |---|---|
-| 5 m | about 4–5% |
-| 25 m | about 13–17% |
-| 55 m (open field, ceiling) | 50–60% |
+| 5 m (campaign A) | about 4–5% |
+| 25 m (campaign A) | about 13–17% |
+| about 55 m (campaign B, farthest distance tested) | 50–60% |
 
 The link degrades gradually rather than failing suddenly. That makes multi-hop relaying through other wearers a better way to extend coverage than antenna modifications, which this form factor does not allow.
 
 !!! note "Lessons from field testing"
-    - A USB-tethered node browns out and resets when the cable is pulled, so every range test runs on battery.
+    - A USB-tethered node browns out and resets when the cable is pulled, so the node now runs on its own battery.
     - At 2.4 GHz, a hand or the wearer's body, or a nearby laptop chassis, can cut the link completely. Mount the node away from both.
 
 ## Fall detection

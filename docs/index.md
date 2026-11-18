@@ -1,6 +1,6 @@
 # Edge-Intelligent Health Monitoring over Adaptive Low-Power and Lossy Networks
 
-**A privacy-preserving wearable IoT mesh.** Wrist-worn nodes measure heart rate, detect falls on the device itself, and report over a self-organizing IEEE 802.15.4 / 6LoWPAN / RPL mesh built on RIOT OS. The site needs no cloud, and raw physiological data never leaves it.
+**A privacy-preserving wearable IoT mesh.** Wrist-worn nodes measure heart rate, carry an embedded fall detector, and report over a self-organizing IEEE 802.15.4 / 6LoWPAN / RPL mesh built on RIOT OS. The site needs no cloud, and raw physiological data never leaves it.
 
 [Back to the project site](https://sapphire-rapid.github.io/privacy-preserving-wearable/){ .md-button .md-button--primary } [View the code on GitHub](https://github.com/sapphire-rapid/privacy-preserving-wearable){ .md-button }
 
@@ -33,8 +33,8 @@ graph LR
 
 | Area | Result |
 |---|---|
-| **End-to-end** | Node → RPL mesh → border router → Pi 4 → ACK back to the node, with RPL rank and packet loss in every packet |
-| **Range** | 55 m open-field ceiling at +8 dBm with on-board chip antennas |
+| **End-to-end** | Node → RPL mesh → border router → Pi 4 → ACK back to the node, with the RPL rank in every packet and packet loss tracked per node |
+| **Range** | Link still up at about 55 m outdoors (50–60% loss), the farthest distance tested, at +8 dBm with on-board chip antennas |
 | **Fall detection** | 94.9% of SisFall fall trials detected at a 9.8% ADL false-alarm rate (38 subjects, subject-wise nested CV) |
 | **Footprint** | Fall model is 9 coefficients + intercept; node firmware is about 72 KB |
 

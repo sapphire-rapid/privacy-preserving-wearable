@@ -1,6 +1,6 @@
 # Edge-Intelligent Health Monitoring over Adaptive Low-Power and Lossy Networks
 
-**Privacy-preserving wearable IoT mesh**: wrist-worn nodes that measure heart rate, detect falls on-device with TinyML, and report over a self-organizing IEEE 802.15.4 / 6LoWPAN / RPL mesh, built on [RIOT OS](https://www.riot-os.org/). No cloud, and no raw physiological data leaves the local network.
+**Privacy-preserving wearable IoT mesh**: wrist-worn nodes that measure heart rate, carry an embedded fall detector, and report over a self-organizing IEEE 802.15.4 / 6LoWPAN / RPL mesh, built on [RIOT OS](https://www.riot-os.org/). No cloud, and no raw physiological data leaves the local network.
 
 M.Tech (Artificial Intelligence) thesis project, Amrita School of Computing, Amrita Vishwa Vidyapeetham, Coimbatore
 Knowledge Engineering and Semantic Computing (KESC) research group
@@ -13,7 +13,7 @@ Author: **G Tanush Adithiya** · Supervisor: **Dr. M. Senthilkumar**
 
 Elderly-care facilities, autism hostels and off-grid industrial sites need continuous physiological monitoring, but often have poor connectivity and good reasons not to stream health data to a cloud. This project keeps both inference and routing on the devices:
 
-- **On-node edge AI**: an IMU fall detector runs on the wearable itself, so only an *alert* needs to cross the network.
+- **On-node edge AI**: the IMU fall detector is plain C sized for the wearable, so only an *alert* has to cross the network. It matches the Python reference on the host; validation on the band itself is the next step.
 - **Self-organizing mesh**: nodes join, leave and re-parent automatically over RPL, so a worker or resident who walks out of the border router's range is still reachable through other nodes.
 - **Local only**: the border router and a Raspberry Pi 4 on site are the only infrastructure.
 
@@ -45,9 +45,9 @@ graph LR
 
 | What | Result |
 |---|---|
-| End-to-end path | Node → RPL → border router → Pi 4 → ACK back to node, bidirectional, with RPL rank and packet loss carried in every packet |
+| End-to-end path | Node → RPL → border router → Pi 4 → ACK back to node, bidirectional, with the RPL rank carried in every packet and packet loss tracked per node |
 | Heart rate | MAX30102 driver written from scratch on RIOT `periph/i2c.h` (no in-tree driver); DC-baseline removal + peak detection, 100 Hz sampling |
-| Range (single hop, line of sight, +8 dBm) | Open-field ceiling **55 m** (50–60% loss there); about 4–5% loss at 5 m and 13–17% at 25 m |
+| Range (single hop, +8 dBm) | About 4–5% loss at 5 m and 13–17% at 25 m (line of sight, USB-tethered); 50–60% loss at about **55 m** outdoors, the farthest distance tested |
 | Fall detection (SisFall, 38 subjects, subject-wise nested CV, trial level) | **94.9% fall recall**, 9.8% ADL false-alarm rate, with a 3 s post-impact stillness confirmation |
 | Model footprint | 9 coefficients + intercept (plus per-feature scaling); C export matches the Python reference on every test vector |
 | Mesh firmware | Border router configures its uplink and RPL root on boot (no manual shell steps); a DIS keeper lets nodes find a parent without a power-cycle; Thread-like Trickle (Imax about 33 s); floating DODAGs disabled |

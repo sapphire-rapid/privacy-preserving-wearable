@@ -1,6 +1,6 @@
 # Fall detection (on-node edge AI)
 
-The wearable decides on its own whether a fall happened. Only the resulting alert travels over the mesh.
+The detector is designed to run on the wearable, so only the resulting alert travels over the mesh. Today it is exported to C and verified against the Python reference on the host; validation on the band itself is the next step.
 
 ## Pipeline
 
