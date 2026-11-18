@@ -6,7 +6,8 @@ M.Tech (Artificial Intelligence) thesis project, Amrita School of Computing, Amr
 Knowledge Engineering and Semantic Computing (KESC) research group
 Author: **G Tanush Adithiya** · Supervisor: **Dr. M. Senthilkumar**
 
-📖 **Documentation site:** https://sapphire-rapid.github.io/privacy-preserving-wearable/
+**Project site:** https://sapphire-rapid.github.io/privacy-preserving-wearable/ (interactive ward simulation)
+**Documentation:** https://sapphire-rapid.github.io/privacy-preserving-wearable/docs/
 
 ## Why
 
@@ -63,7 +64,8 @@ Fall-detection metrics, sweep tables and plots: [`ml/fall-detection/results/`](m
 | [`ml/fall-detection/`](ml/fall-detection/) | Python pipeline: SisFall features, training, nested evaluation, C export |
 | [`border-router/`](border-router/) | Original Pi 4 UDP server (superseded by `firmware/mesh/server/mesh_server.py`) |
 | [`hardware/`](hardware/) | Bill of materials, wiring, power, stack order, enclosure notes |
-| [`docs/`](docs/) | Architecture, installation and the documentation-site sources |
+| [`docs/`](docs/) | Architecture, installation and the documentation-site sources (MkDocs, served at `/docs/`) |
+| [`website/`](website/) | Project landing page: static HTML/CSS/JS with the interactive ward simulation, no build step |
 
 ## Getting started
 

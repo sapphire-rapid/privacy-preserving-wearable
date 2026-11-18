@@ -1,7 +1,7 @@
-site_name: Edge-Intelligent Wearable Health Mesh
+site_name: Wearable Health Mesh docs
 site_description: Privacy-preserving wearable IoT mesh with on-node fall detection over IEEE 802.15.4 / 6LoWPAN / RPL on RIOT OS
 site_author: G Tanush Adithiya
-site_url: https://sapphire-rapid.github.io/privacy-preserving-wearable/
+site_url: https://sapphire-rapid.github.io/privacy-preserving-wearable/docs/
 repo_url: https://github.com/sapphire-rapid/privacy-preserving-wearable
 repo_name: sapphire-rapid/privacy-preserving-wearable
 edit_uri: edit/main/docs/
@@ -9,14 +9,17 @@ copyright: "© 2026 G Tanush Adithiya · Amrita School of Computing · MIT Licen
 
 theme:
   name: material
+  font: false
+  favicon: assets/favicon.svg
+  logo: assets/favicon.svg
   palette:
     - scheme: default
-      primary: indigo
-      accent: deep orange
+      primary: custom
+      accent: custom
       toggle: { icon: material/weather-night, name: Dark mode }
     - scheme: slate
-      primary: indigo
-      accent: deep orange
+      primary: custom
+      accent: custom
       toggle: { icon: material/weather-sunny, name: Light mode }
   icon:
     repo: fontawesome/brands/github
@@ -27,8 +30,12 @@ theme:
     - content.code.copy
     - search.highlight
 
+extra_css:
+  - stylesheets/extra.css
+
 nav:
-  - Home: index.md
+  - Project site: https://sapphire-rapid.github.io/privacy-preserving-wearable/
+  - Overview: index.md
   - System:
       - Architecture: ARCHITECTURE.md
       - Mesh firmware: mesh.md
