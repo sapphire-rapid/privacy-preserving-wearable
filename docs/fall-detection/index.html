@@ -12,25 +12,31 @@
         <meta name="author" content="G Tanush Adithiya">
       
       
+        <link rel="canonical" href="https://sapphire-rapid.github.io/privacy-preserving-wearable/docs/fall-detection/">
       
+      
+        <link rel="prev" href="../hardware/">
+      
+      
+        <link rel="next" href="../results/">
       
       
         
       
       
-      <link rel="icon" href="/privacy-preserving-wearable/assets/images/favicon.png">
+      <link rel="icon" href="../assets/favicon.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Edge-Intelligent Wearable Health Mesh</title>
+        <title>Fall detection - Wearable Health Mesh docs</title>
       
     
     
-      <link rel="stylesheet" href="/privacy-preserving-wearable/assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="/privacy-preserving-wearable/assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -41,15 +47,11 @@
     
     
       
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
     
     
-    <script>__md_scope=new URL("/privacy-preserving-wearable/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -65,13 +67,18 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-orange">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#fall-detection-on-node-edge-ai" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -83,10 +90,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/privacy-preserving-wearable/." title="Edge-Intelligent Wearable Health Mesh" class="md-header__button md-logo" aria-label="Edge-Intelligent Wearable Health Mesh" data-md-component="logo">
+    <a href=".." title="Wearable Health Mesh docs" class="md-header__button md-logo" aria-label="Wearable Health Mesh docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../assets/favicon.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -97,13 +103,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Edge-Intelligent Wearable Health Mesh
+            Wearable Health Mesh docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Fall detection
             
           </span>
         </div>
@@ -116,7 +122,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-orange"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
@@ -126,7 +132,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-orange"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
@@ -214,13 +220,32 @@
   
   
     <li class="md-tabs__item">
-      <a href="/privacy-preserving-wearable/." class="md-tabs__link">
+      <a href="https://sapphire-rapid.github.io/privacy-preserving-wearable/" class="md-tabs__link">
         
   
   
     
   
-  Home
+  Project site
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
 
       </a>
     </li>
@@ -235,7 +260,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/privacy-preserving-wearable/ARCHITECTURE/" class="md-tabs__link">
+        <a href="../ARCHITECTURE/" class="md-tabs__link">
           
   
   
@@ -251,11 +276,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="/privacy-preserving-wearable/fall-detection/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -273,7 +300,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/privacy-preserving-wearable/results/" class="md-tabs__link">
+      <a href="../results/" class="md-tabs__link">
         
   
   
@@ -292,7 +319,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/privacy-preserving-wearable/INSTALLATION/" class="md-tabs__link">
+      <a href="../INSTALLATION/" class="md-tabs__link">
         
   
   
@@ -311,7 +338,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/privacy-preserving-wearable/about/" class="md-tabs__link">
+      <a href="../about/" class="md-tabs__link">
         
   
   
@@ -346,13 +373,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/privacy-preserving-wearable/." title="Edge-Intelligent Wearable Health Mesh" class="md-nav__button md-logo" aria-label="Edge-Intelligent Wearable Health Mesh" data-md-component="logo">
+    <a href=".." title="Wearable Health Mesh docs" class="md-nav__button md-logo" aria-label="Wearable Health Mesh docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../assets/favicon.svg" alt="logo">
 
     </a>
-    Edge-Intelligent Wearable Health Mesh
+    Wearable Health Mesh docs
   </label>
   
     <div class="md-nav__source">
@@ -376,14 +402,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/privacy-preserving-wearable/." class="md-nav__link">
+      <a href="https://sapphire-rapid.github.io/privacy-preserving-wearable/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Home
+    Project site
   
 
     
@@ -398,71 +424,19 @@
     
       
       
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    System
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    System
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
   
   
   
   
     <li class="md-nav__item">
-      <a href="/privacy-preserving-wearable/ARCHITECTURE/" class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Overview
   
 
     
@@ -471,70 +445,6 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/privacy-preserving-wearable/mesh/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Mesh firmware
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/privacy-preserving-wearable/hardware/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Hardware
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
     </li>
   
 
@@ -569,7 +479,7 @@
   <span class="md-ellipsis">
     
   
-    Edge AI
+    System
   
 
     
@@ -585,7 +495,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Edge AI
+    System
   
 
           </label>
@@ -598,14 +508,70 @@
   
   
     <li class="md-nav__item">
-      <a href="/privacy-preserving-wearable/fall-detection/" class="md-nav__link">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Fall detection
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mesh firmware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware
   
 
     
@@ -630,10 +596,182 @@
       
   
   
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Edge AI
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Edge AI
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fall detection
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fall detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-logistic-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why logistic regression
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#training-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Training pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
   
   
     <li class="md-nav__item">
-      <a href="/privacy-preserving-wearable/results/" class="md-nav__link">
+      <a href="../results/" class="md-nav__link">
         
   
   
@@ -660,7 +798,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/privacy-preserving-wearable/INSTALLATION/" class="md-nav__link">
+      <a href="../INSTALLATION/" class="md-nav__link">
         
   
   
@@ -687,7 +825,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/privacy-preserving-wearable/about/" class="md-nav__link">
+      <a href="../about/" class="md-nav__link">
         
   
   
@@ -724,6 +862,49 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-logistic-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why logistic regression
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#training-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Training pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -736,8 +917,71 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+
+
+<h1 id="fall-detection-on-node-edge-ai">Fall detection (on-node edge AI)<a class="headerlink" href="#fall-detection-on-node-edge-ai" title="Permanent link">&para;</a></h1>
+<p>The wearable decides on its own whether a fall happened. Only the resulting alert travels over the mesh.</p>
+<h2 id="pipeline">Pipeline<a class="headerlink" href="#pipeline" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>graph LR
+    A["LSM6DS3TR-C&lt;br/&gt;52 Hz, ±16 g"] --&gt; B["2 s window&lt;br/&gt;(104 samples)"]
+    B --&gt; C["9 features&lt;br/&gt;magnitude + tilt"]
+    C --&gt; D["Logistic regression&lt;br/&gt;p ≥ 0.93"]
+    D -- trigger --&gt; E["3 s stillness check&lt;br/&gt;low motion, about 1 g"]
+    E -- confirmed --&gt; F["Fall alert"]</code></pre>
+<ol>
+<li><strong>Stage 1, IMU (machine learning):</strong> every 2 s window of accelerometer data is reduced to 9 features (magnitude statistics, jerk, low-g count, and the tilt change between before and after the impact) and scored by a logistic-regression model.</li>
+<li><strong>Confirmation:</strong> a trigger only becomes an alert if the wearer then stays still for 3 s, as a person who has fallen typically does. This removes most false alarms from sitting down hard or similar movements.</li>
+<li><strong>Stage 2, PPG (rule):</strong> a heart-rate check after the fall will classify the alert as <em>critical</em> or <em>fall-only</em> (future work).</li>
+</ol>
+<h2 id="why-logistic-regression">Why logistic regression<a class="headerlink" href="#why-logistic-regression" title="Permanent link">&para;</a></h2>
+<p>Neural models (a TinyCNN on PPG data) did not reach the accuracy target. Classical models on hand-designed features did. Logistic regression gave the best recall/false-alarm trade-off at the trial level, and it fits on the node as 9 coefficients plus an intercept. The C export reproduces the Python model's output on every test vector.</p>
+<p><img alt="Fall-detection trade-off" src="../assets/results/fall_recall_vs_far_v2.png" /></p>
+<h2 id="training-pipeline">Training pipeline<a class="headerlink" href="#training-pipeline" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/</code></td>
+<td>Feature extraction (<code>features.py</code>, <code>features_v2.py</code>), training (<code>train.py</code>), evaluation (<code>eval_*.py</code>), C export (<code>export_c.py</code>, <code>export_final.py</code>)</td>
+</tr>
+<tr>
+<td><code>include/</code></td>
+<td>Exported model headers and the feature spec, shared with the firmware-side copy</td>
+</tr>
+<tr>
+<td><code>results/</code></td>
+<td>Metrics, sweep tables, nested-CV fold results, plots</td>
+</tr>
+<tr>
+<td><code>data/</code></td>
+<td>Dataset notes (raw SisFall data and derived feature CSVs are gitignored — regenerate locally)</td>
+</tr>
+</tbody>
+</table>
+<p>Dataset notes and rebuild steps: <a href="https://github.com/sapphire-rapid/privacy-preserving-wearable/blob/main/ml/fall-detection/data/README.md"><code>ml/fall-detection/data/README.md</code></a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -784,10 +1028,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "/privacy-preserving-wearable/", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "search.highlight"], "search": "/privacy-preserving-wearable/assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/privacy-preserving-wearable/assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

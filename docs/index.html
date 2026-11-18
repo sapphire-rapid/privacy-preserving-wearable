@@ -12,31 +12,29 @@
         <meta name="author" content="G Tanush Adithiya">
       
       
-        <link rel="canonical" href="https://sapphire-rapid.github.io/privacy-preserving-wearable/mesh/">
+        <link rel="canonical" href="https://sapphire-rapid.github.io/privacy-preserving-wearable/docs/">
       
       
-        <link rel="prev" href="../ARCHITECTURE/">
       
-      
-        <link rel="next" href="../hardware/">
+        <link rel="next" href="ARCHITECTURE/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="assets/favicon.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Mesh firmware - Edge-Intelligent Wearable Health Mesh</title>
+        <title>Wearable Health Mesh docs</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -47,15 +45,11 @@
     
     
       
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+      <link rel="stylesheet" href="stylesheets/extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -71,7 +65,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-orange">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -80,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#mesh-firmware" class="md-skip">
+        <a href="#edge-intelligent-health-monitoring-over-adaptive-low-power-and-lossy-networks" class="md-skip">
           Skip to content
         </a>
       
@@ -94,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Edge-Intelligent Wearable Health Mesh" class="md-header__button md-logo" aria-label="Edge-Intelligent Wearable Health Mesh" data-md-component="logo">
+    <a href="." title="Wearable Health Mesh docs" class="md-header__button md-logo" aria-label="Wearable Health Mesh docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="assets/favicon.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -108,13 +101,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Edge-Intelligent Wearable Health Mesh
+            Wearable Health Mesh docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Mesh firmware
+              Overview
             
           </span>
         </div>
@@ -127,7 +120,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-orange"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
@@ -137,7 +130,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-orange"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
@@ -225,13 +218,13 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="https://sapphire-rapid.github.io/privacy-preserving-wearable/" class="md-tabs__link">
         
   
   
     
   
-  Home
+  Project site
 
       </a>
     </li>
@@ -245,10 +238,29 @@
     
   
   
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../ARCHITECTURE/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="ARCHITECTURE/" class="md-tabs__link">
           
   
   
@@ -268,7 +280,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../fall-detection/" class="md-tabs__link">
+        <a href="fall-detection/" class="md-tabs__link">
           
   
   
@@ -286,7 +298,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../results/" class="md-tabs__link">
+      <a href="results/" class="md-tabs__link">
         
   
   
@@ -305,7 +317,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../INSTALLATION/" class="md-tabs__link">
+      <a href="INSTALLATION/" class="md-tabs__link">
         
   
   
@@ -324,7 +336,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../about/" class="md-tabs__link">
+      <a href="about/" class="md-tabs__link">
         
   
   
@@ -359,13 +371,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Edge-Intelligent Wearable Health Mesh" class="md-nav__button md-logo" aria-label="Edge-Intelligent Wearable Health Mesh" data-md-component="logo">
+    <a href="." title="Wearable Health Mesh docs" class="md-nav__button md-logo" aria-label="Wearable Health Mesh docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="assets/favicon.svg" alt="logo">
 
     </a>
-    Edge-Intelligent Wearable Health Mesh
+    Wearable Health Mesh docs
   </label>
   
     <div class="md-nav__source">
@@ -389,14 +400,14 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="https://sapphire-rapid.github.io/privacy-preserving-wearable/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Home
+    Project site
   
 
     
@@ -411,91 +422,6 @@
     
       
       
-  
-  
-    
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    System
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_2">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    System
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ARCHITECTURE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
   
   
     
@@ -517,7 +443,7 @@
   <span class="md-ellipsis">
     
   
-    Mesh firmware
+    Overview
   
 
     
@@ -528,14 +454,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+      <a href="." class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Mesh firmware
+    Overview
   
 
     
@@ -561,10 +487,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#install-fedora" class="md-nav__link">
+  <a href="#the-problem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install (Fedora)
+        The problem
       
     </span>
   </a>
@@ -572,10 +498,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flash" class="md-nav__link">
+  <a href="#the-approach" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Flash
+        The approach
       
     </span>
   </a>
@@ -583,10 +509,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-changed-vs-the-old-apps" class="md-nav__link">
+  <a href="#key-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What changed vs. the old apps
+        Key results
       
     </span>
   </a>
@@ -594,21 +520,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-you-should-see" class="md-nav__link">
+  <a href="#built-with" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What you should see
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#acceptance-test-no-shell-commands-allowed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Acceptance test — no shell commands allowed
+        Built with
       
     </span>
   </a>
@@ -622,6 +537,85 @@
     </li>
   
 
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -631,7 +625,35 @@
   
   
     <li class="md-nav__item">
-      <a href="../hardware/" class="md-nav__link">
+      <a href="mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mesh firmware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="hardware/" class="md-nav__link">
         
   
   
@@ -679,10 +701,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -700,8 +722,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -718,7 +740,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../fall-detection/" class="md-nav__link">
+      <a href="fall-detection/" class="md-nav__link">
         
   
   
@@ -753,7 +775,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../results/" class="md-nav__link">
+      <a href="results/" class="md-nav__link">
         
   
   
@@ -780,7 +802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../INSTALLATION/" class="md-nav__link">
+      <a href="INSTALLATION/" class="md-nav__link">
         
   
   
@@ -807,7 +829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../about/" class="md-nav__link">
+      <a href="about/" class="md-nav__link">
         
   
   
@@ -854,10 +876,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#install-fedora" class="md-nav__link">
+  <a href="#the-problem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install (Fedora)
+        The problem
       
     </span>
   </a>
@@ -865,10 +887,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flash" class="md-nav__link">
+  <a href="#the-approach" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Flash
+        The approach
       
     </span>
   </a>
@@ -876,10 +898,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-changed-vs-the-old-apps" class="md-nav__link">
+  <a href="#key-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What changed vs. the old apps
+        Key results
       
     </span>
   </a>
@@ -887,21 +909,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-you-should-see" class="md-nav__link">
+  <a href="#built-with" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What you should see
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#acceptance-test-no-shell-commands-allowed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Acceptance test — no shell commands allowed
+        Built with
       
     </span>
   </a>
@@ -928,108 +939,58 @@
   
 
 
-<h1 id="mesh-firmware">Mesh firmware<a class="headerlink" href="#mesh-firmware" title="Permanent link">&para;</a></h1>
-<p>Source: <a href="https://github.com/sapphire-rapid/privacy-preserving-wearable/tree/main/firmware/mesh"><code>firmware/mesh/</code></a></p>
-<div class="highlight"><pre><span></span><code>mesh/
-├── rpl_tuning.mk        shared Trickle/lifetime/TX-power flags (every build includes it)
-├── mesh_node/           ONE firmware for all XIAOs: make ROLE=hr | ROLE=relay
-├── mesh_br/             nRF52840 dongle: border router + RPL root, auto-configured
-└── server/mesh_server.py  Pi4 sink: per-node stats, replies "ACK"+seq
-</code></pre></div>
-<p>Built and checked against RIOT master (2026-11-12) with arm-none-eabi-gcc 13.2, <code>-Werror</code>:
-mesh_node hr 72 KB, relay 70 KB, mesh_br 98 KB.</p>
-<h2 id="install-fedora">Install (Fedora)<a class="headerlink" href="#install-fedora" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>&lt;your<span class="w"> </span>repo<span class="w"> </span>clone&gt;<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>pull<span class="w">          </span><span class="c1"># brings in firmware/mesh/</span>
-<span class="nb">cd</span><span class="w"> </span>firmware/mesh
-</code></pre></div>
-<code>RIOTBASE</code> defaults to <code>~/riotproject</code> in both Makefiles, so the apps build from anywhere.
-Build output goes to <code>bin/</code> (gitignored).</p>
-<h2 id="flash">Flash<a class="headerlink" href="#flash" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code><span class="c1"># HR node (prototype 1, battery + MAX30102)  — double-tap reset for the UF2 drive</span>
-<span class="nb">cd</span><span class="w"> </span>firmware/mesh/mesh_node
-make<span class="w"> </span><span class="nv">ROLE</span><span class="o">=</span>hr<span class="w"> </span><span class="nv">UF2_SOFTDEV</span><span class="o">=</span>DROP<span class="w"> </span>flash
-
-<span class="c1"># the two relay XIAOs</span>
-make<span class="w"> </span><span class="nv">ROLE</span><span class="o">=</span>relay<span class="w"> </span><span class="nv">UF2_SOFTDEV</span><span class="o">=</span>DROP<span class="w"> </span>flash
-
-<span class="c1"># border router dongle: flash exactly the way you flashed gnrc_border_router before</span>
-<span class="nb">cd</span><span class="w"> </span>../mesh_br
-make<span class="w">                     </span><span class="c1"># -&gt; bin/nrf52840dongle/mesh_br.hex for nrfutil</span>
-</code></pre></div>
-<code>UF2_SOFTDEV=DROP</code> is still mandatory on every XIAO flash.</p>
-<p>Pi4: copy <code>server/mesh_server.py</code> over and run <code>python3 mesh_server.py</code>. It <strong>replaces</strong> <code>hr_reply_server.py</code>:
-the repo version of that script replies with a bare 3-byte <code>ACK</code>, while the firmware only accepts
-<code>ACK</code>+seq (7 bytes), and it mixed all nodes into one loss counter.
-The Pi4 <code>usb0</code> systemd-networkd config stays as it is.</p>
-<h2 id="what-changed-vs-the-old-apps">What changed vs. the old apps<a class="headerlink" href="#what-changed-vs-the-old-apps" title="Permanent link">&para;</a></h2>
+<h1 id="edge-intelligent-health-monitoring-over-adaptive-low-power-and-lossy-networks">Edge-Intelligent Health Monitoring over Adaptive Low-Power and Lossy Networks<a class="headerlink" href="#edge-intelligent-health-monitoring-over-adaptive-low-power-and-lossy-networks" title="Permanent link">&para;</a></h1>
+<p><strong>A privacy-preserving wearable IoT mesh.</strong> Wrist-worn nodes measure heart rate, detect falls on the device itself, and report over a self-organizing IEEE 802.15.4 / 6LoWPAN / RPL mesh built on RIOT OS. The site needs no cloud, and raw physiological data never leaves it.</p>
+<p><a class="md-button md-button--primary" href="https://sapphire-rapid.github.io/privacy-preserving-wearable/">Back to the project site</a> <a class="md-button" href="https://github.com/sapphire-rapid/privacy-preserving-wearable">View the code on GitHub</a></p>
+<hr />
+<h2 id="the-problem">The problem<a class="headerlink" href="#the-problem" title="Permanent link">&para;</a></h2>
+<p>Elderly-care facilities, autism hostels and off-grid industrial sites need continuous monitoring of the people in them. These sites often have weak connectivity, and good reasons not to stream health data to a cloud service. A wearable that only talks to a single gateway also loses contact as soon as its wearer walks out of range.</p>
+<h2 id="the-approach">The approach<a class="headerlink" href="#the-approach" title="Permanent link">&para;</a></h2>
+<div class="grid cards">
+<ul>
+<li><strong>On-node edge AI.</strong> A logistic-regression fall detector runs on the wearable's own IMU data, so only an <em>alert</em> has to cross the network.</li>
+<li><strong>Self-organizing mesh.</strong> Nodes join, leave and re-parent automatically over RPL, so a node out of the gateway's range is reached through other nodes.</li>
+<li><strong>Local only.</strong> One nRF52840 border-router dongle and a Raspberry Pi 4 on site are the entire infrastructure.</li>
+</ul>
+</div>
+<pre class="mermaid"><code>graph LR
+    N1["HR node&lt;br/&gt;XIAO nRF52840 Sense&lt;br/&gt;IMU + MAX30102"] -- "802.15.4 / 6LoWPAN / RPL" --&gt; N2["Relay node&lt;br/&gt;XIAO nRF52840 Sense"]
+    N1 -. "direct when in range" .-&gt; BR
+    N2 --&gt; BR["Border router&lt;br/&gt;nRF52840 dongle, RPL root"]
+    BR -- "USB CDC-ECM" --&gt; PI["Raspberry Pi 4&lt;br/&gt;sink, ACK, logging"]
+    PI -- "ACK + seq" --&gt; N1</code></pre>
+<h2 id="key-results">Key results<a class="headerlink" href="#key-results" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Problem</th>
-<th>Root cause (RIOT source)</th>
-<th>Fix</th>
+<th>Area</th>
+<th>Result</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>nib prefix add 6 2001:db8:1::/64</code> after every BR boot</td>
-<td><code>gnrc_ipv6_static_addr</code> adds the uplink address as a /128, so the /64 is never on-link</td>
-<td><code>mesh_br</code> adds the prefix in <code>main()</code></td>
+<td><strong>End-to-end</strong></td>
+<td>Node → RPL mesh → border router → Pi 4 → ACK back to the node, with RPL rank and packet loss in every packet</td>
 </tr>
 <tr>
-<td>ACKs dead after a BR reboot until <code>rpl trickle reset</code></td>
-<td>Root always boots with the same version and DTSN=1, so nodes never resend DAOs and the BR has no downward routes</td>
-<td>Random DTSN at boot → every node resends its DAO; trickle reset at boot</td>
+<td><strong>Range</strong></td>
+<td>55 m open-field ceiling at +8 dBm with on-board chip antennas</td>
 </tr>
 <tr>
-<td>Nodes need a power-cycle to find a parent</td>
-<td>RIOT sends <strong>one</strong> DIS at init, then waits for DIOs; with Imax ≈ 2.3 h the wait can be hours</td>
-<td>DIS keeper thread: multicast DIS every 5 s while the node has no parent</td>
+<td><strong>Fall detection</strong></td>
+<td>94.9% of SisFall fall trials detected at a 9.8% ADL false-alarm rate (38 subjects, subject-wise nested CV)</td>
 </tr>
 <tr>
-<td>Slow reaction to moved/dead parents</td>
-<td>Imax 2.3 h, route lifetime 5 min</td>
-<td>Imax ≈ 33 s (Thread-like), 90 s routes, silent parent probed after 75 s</td>
-</tr>
-<tr>
-<td>MAX30102 FIFO overflow</td>
-<td>500 ms blocking <code>sock_udp_recv</code> vs. a 320 ms FIFO</td>
-<td>ACKs handled in their own thread; FIFO polled every 100 ms; <code>FIFO_OVF!</code> flag if it ever happens</td>
+<td><strong>Footprint</strong></td>
+<td>Fall model is 9 coefficients + intercept; node firmware is about 72 KB</td>
 </tr>
 </tbody>
 </table>
-<p>The power cost of the faster Trickle is negligible: the nRF52840 radio listens continuously anyway,
-and the HR node already transmits every 3 s, against one DIO every ~33 s.</p>
-<h2 id="what-you-should-see">What you should see<a class="headerlink" href="#what-you-should-see" title="Permanent link">&para;</a></h2>
-<p>HR node terminal:
-<div class="highlight"><pre><span></span><code>mesh_node role=HR period=3000ms sink=[2001:db8:1::2]:8888
-[HR] MAX30102 OK (SpO2 mode, 100 Hz)
-[RPL] no parent -&gt; multicast DIS
-[RPL] JOINED DODAG
-[ADDR] 2001:db8::xxxx
-[RPL] parent=fe80::... parent_rank=512 my_rank=768
-[TX] seq=0 bpm=76 rank=768 hops=2 | loss=0% (0/0 ok) sent=1 acked=0 late=0
-[ACK] seq=0 rtt=38ms
-</code></pre></div>
-Relays print the same <code>[RPL]</code> lines plus a heartbeat <code>[TX]</code>/<code>[ACK]</code> every 10 s.
-BR on boot:
-<div class="highlight"><pre><span></span><code>[BR] uplink if 6: on-link prefix 2001:db8:1::/64 added
-[BR] RPL root instance 0 dodag 2001:db8::... dtsn=137, trickle reset (Imin=1024ms, doublings=5)
-</code></pre></div>
-Pi4: one <code>[RX &lt;node&gt; HR|relay/hb]</code> line per packet; type <code>t</code> + Enter for a per-node table,
-a number + Enter to tag the distance for walk tests (CSV: <code>mesh_log.csv</code>).</p>
-<h2 id="acceptance-test-no-shell-commands-allowed">Acceptance test — no shell commands allowed<a class="headerlink" href="#acceptance-test-no-shell-commands-allowed" title="Permanent link">&para;</a></h2>
-<p>Pass = the HR terminal shows <code>[ACK]</code> again within ~10 s (worst case ~40 s) of the last step, every time.</p>
-<ol>
-<li>BR + Pi4 up first, then power relay A, relay B, HR node.</li>
-<li>HR node first, then relays, BR last.</li>
-<li>Everything running → unplug/replug the BR dongle.</li>
-<li>HR node out of BR range so it hops through a relay → switch that relay off → it should re-parent
-   through the other relay or the BR within ~2 min (silent-parent probe).</li>
-<li>Switch the relay back on → it rejoins on its own.</li>
-</ol>
-<p>If a step fails, send me the HR, relay and BR terminal output from that step.
-<code>rpl</code> and <code>nib route</code> are still available on the BR shell for diagnosis.</p>
+<p>Details on the <a href="results/">Results</a> page.</p>
+<h2 id="built-with">Built with<a class="headerlink" href="#built-with" title="Permanent link">&para;</a></h2>
+<p>Seeed XIAO nRF52840 Sense · MH-ET LIVE MAX30102 · Nordic PCA10059 · Raspberry Pi 4 · RIOT OS · Python / scikit-learn</p>
+<hr />
+<p>M.Tech (Artificial Intelligence) thesis project by <strong>G Tanush Adithiya</strong>, supervised by <strong>Dr. M. Senthilkumar</strong>. Knowledge Engineering and Semantic Computing (KESC) research group, Amrita School of Computing, Amrita Vishwa Vidyapeetham, Coimbatore.</p>
 
 
 
@@ -1089,10 +1050,10 @@ a number + Enter to tag the distance for walk tests (CSV: <code>mesh_log.csv</co
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "search.highlight"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
