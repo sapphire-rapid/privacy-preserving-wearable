@@ -1,0 +1,60 @@
+site_name: Edge-Intelligent Wearable Health Mesh
+site_description: Privacy-preserving wearable IoT mesh with on-node fall detection over IEEE 802.15.4 / 6LoWPAN / RPL on RIOT OS
+site_author: G Tanush Adithiya
+site_url: https://sapphire-rapid.github.io/privacy-preserving-wearable/
+repo_url: https://github.com/sapphire-rapid/privacy-preserving-wearable
+repo_name: sapphire-rapid/privacy-preserving-wearable
+edit_uri: edit/main/docs/
+copyright: "© 2026 G Tanush Adithiya · Amrita School of Computing · MIT License"
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: deep orange
+      toggle: { icon: material/weather-night, name: Dark mode }
+    - scheme: slate
+      primary: indigo
+      accent: deep orange
+      toggle: { icon: material/weather-sunny, name: Light mode }
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - System:
+      - Architecture: ARCHITECTURE.md
+      - Mesh firmware: mesh.md
+      - Hardware: hardware.md
+  - Edge AI:
+      - Fall detection: fall-detection.md
+  - Results: results.md
+  - Setup: INSTALLATION.md
+  - About: about.md
+
+plugins:
+  - search
+  - include-markdown
+
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - toc:
+      permalink: true

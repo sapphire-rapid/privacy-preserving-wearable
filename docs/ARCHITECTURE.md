@@ -12,7 +12,7 @@
 
 - IEEE 802.15.4 (O-QPSK, 250 kbps) at the PHY/MAC layer, 6LoWPAN for IPv6 header compression, RPL for mesh routing.
 - Wireless mesh prefix: `2001:db8::/64`. BR uplink (to the Pi): `2001:db8:1::/64`, static-configured (`PREFIX_CONF=static`), so the Pi side needs manual IPv6 address/route configuration — see `docs/INSTALLATION.md`.
-- Routing decisions (planned: custom OF) will weight a node's DODAG parent choice by its current health-urgency flag, residual battery, and IMU-derived mobility — a node mid-alert should get preferential routing over idle neighbors, not continuous ML-driven re-routing.
+- Routing decisions (future work: custom OF) will weight a node's DODAG parent choice by its current health-urgency flag, residual battery, and IMU-derived mobility — a node mid-alert should get preferential routing over idle neighbors, not continuous ML-driven re-routing.
 
 ## On-device inference pipeline
 
