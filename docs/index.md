@@ -2,7 +2,7 @@
 
 **A privacy-preserving wearable IoT mesh.** Wrist-worn nodes measure heart rate, detect falls on the device itself, and report over a self-organizing IEEE 802.15.4 / 6LoWPAN / RPL mesh built on RIOT OS. The site needs no cloud, and raw physiological data never leaves it.
 
-[View the code on GitHub](https://github.com/sapphire-rapid/privacy-preserving-wearable){ .md-button .md-button--primary } [How it works](ARCHITECTURE.md){ .md-button }
+[Back to the project site](https://sapphire-rapid.github.io/privacy-preserving-wearable/){ .md-button .md-button--primary } [View the code on GitHub](https://github.com/sapphire-rapid/privacy-preserving-wearable){ .md-button }
 
 ---
 
