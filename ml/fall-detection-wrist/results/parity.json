@@ -1,0 +1,100 @@
+{
+ "firmware_fall_features_sha": "9ec8875932bda914",
+ "op": {
+  "op_mode": "trig",
+  "thr": 0.671,
+  "std": 0.08,
+  "mean_tol": 0.2,
+  "provisional": true
+ },
+ "host_test_compile": {
+  "rc": 0,
+  "stderr": ""
+ },
+ "host_test": {
+  "rc": 0,
+  "tail": "4     0          PASS  \n5     0          PASS  \n\nRESULT: ALL PASS (12 windows, 6 still segments)"
+ },
+ "windows": {
+  "n": 1000,
+  "n_fall_impact": 200,
+  "per_feature": {
+   "max_mag": {
+    "max_rel": 8.982404594969255e-08,
+    "n_over": 0,
+    "max_abs": 4.0662193701024307e-07
+   },
+   "min_mag": {
+    "max_rel": 9.394497784132553e-08,
+    "n_over": 0,
+    "max_abs": 9.400080802635102e-08
+   },
+   "mean_mag": {
+    "max_rel": 4.115102090473822e-07,
+    "n_over": 0,
+    "max_abs": 5.097951398802536e-07
+   },
+   "std_mag": {
+    "max_rel": 4.279255493362294e-06,
+    "n_over": 0,
+    "max_abs": 2.1853433773699749e-07
+   },
+   "range_mag": {
+    "max_rel": 1.7616942752789272e-05,
+    "n_over": 0,
+    "max_abs": 5.475371374075166e-07
+   },
+   "max_jerk": {
+    "max_rel": 9.904236553140137e-06,
+    "n_over": 0,
+    "max_abs": 6.014713571644847e-07
+   },
+   "std_mag_post": {
+    "max_rel": 1.9467174474144725e-05,
+    "n_over": 0,
+    "max_abs": 1.5259603469708338e-07
+   },
+   "count_low": {
+    "max_rel": 0.0,
+    "n_over": 0,
+    "max_abs": 0.0
+   },
+   "tilt_deg": {
+    "max_rel": 6.977834087855543e-05,
+    "n_over": 0,
+    "max_abs": 2.4984311124853775e-05
+   }
+  },
+  "max_abs_prob_diff": 3.7688492404708285e-07,
+  "trigger_mismatch_at_exported_thr": 0,
+  "n_trigger_py": 249,
+  "n_near_thr": 0,
+  "extra_thresholds": {
+   "0.003": {
+    "mismatch": 0,
+    "n_trigger_py": 980
+   },
+   "0.5": {
+    "mismatch": 0,
+    "n_trigger_py": 292
+   },
+   "0.671": {
+    "mismatch": 0,
+    "n_trigger_py": 249
+   },
+   "0.93": {
+    "mismatch": 0,
+    "n_trigger_py": 164
+   }
+  }
+ },
+ "segments": {
+  "n": 1000,
+  "still_mismatch": 0,
+  "n_still_py": 131
+ },
+ "PASS_features_1e-4": true,
+ "PASS_decisions": true,
+ "PASS_host_test": true,
+ "PASS": true
+}
