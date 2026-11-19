@@ -23,6 +23,7 @@ static const char *const FEAT_NAMES[N_FEATURES] = {
 #define SELFTEST_FEAT_REL   (1e-4f)     /* task: features within 1e-4 relative */
 #define SELFTEST_RUNS       (100)
 
+/* NB: newlib-nano prints an exact 0 as "0.000e-308" with %e; %g prints "0" */
 static float _rel_err(float got, float exp)
 {
     float d = fabsf(got - exp);
@@ -73,7 +74,7 @@ void mode_selftest(void)
         float prob = fall_lr_prob(feat);
         int trig = fall_trigger(prob);
 
-        printf("SELFTEST win=%d exp_prob=%.9g got_prob=%.9g abs_diff=%.3e exp_trig=%d got_trig=%d\n",
+        printf("SELFTEST win=%d exp_prob=%.9g got_prob=%.9g abs_diff=%.3g exp_trig=%d got_trig=%d\n",
                i, (double)w->prob, (double)prob, (double)fabsf(prob - w->prob),
                w->trigger, trig);
         int feats_ok = 1;
@@ -82,7 +83,7 @@ void mode_selftest(void)
             int ok = _feat_ok(feat[j], w->feat[j]);
             feats_ok &= ok;
             if (rel > worst_rel[j]) { worst_rel[j] = rel; }
-            printf("SELFTEST   f%d %-12s exp=%.9g got=%.9g rel=%.3e %s\n", j, FEAT_NAMES[j],
+            printf("SELFTEST   f%d %-12s exp=%.9g got=%.9g rel=%.3g %s\n", j, FEAT_NAMES[j],
                    (double)w->feat[j], (double)feat[j], (double)rel, ok ? "ok" : "FAIL");
         }
         int pass = feats_ok && (trig == w->trigger);
@@ -108,7 +109,7 @@ void mode_selftest(void)
 
     printf("SELFTEST worst_rel_per_feature:");
     for (int j = 0; j < N_FEATURES; j++) {
-        printf(" %s=%.2e", FEAT_NAMES[j], (double)worst_rel[j]);
+        printf(" %s=%.3g", FEAT_NAMES[j], (double)worst_rel[j]);
     }
     putchar('\n');
 

@@ -93,6 +93,11 @@ static void _info(void)
 
     imu_regs_t r;
     imu_read_regs(&r);
+    printf("INFO imu i2c_dev=%u addr=0x%02X poll_us=%u\n", imu_i2c_bus(), imu_i2c_addr(),
+           (unsigned)IMU_POLL_US);
+    if (!r.ok) {
+        puts("INFO imu register read FAILED (values below are not valid)");
+    }
     printf("INFO imu who_am_i=0x%02X ok=%d\n", r.who_am_i, r.ok);
     printf("INFO CTRL1_XL(0x10)=0x%02X  ODR_XL=0x%X (%u Hz)  FS_XL=0x%X (%s)  LPF1_BW_SEL=%u  BW0_XL=%u\n",
            r.ctrl1_xl, r.ctrl1_xl >> 4, imu_odr_hz(), (r.ctrl1_xl >> 2) & 3,
@@ -105,7 +110,7 @@ static void _info(void)
            r.ctrl8_xl & 1);
     printf("INFO CTRL2_G(0x11)=0x%02X CTRL3_C(0x12)=0x%02X CTRL4_C(0x13)=0x%02X CTRL6_C(0x15)=0x%02X\n",
            r.ctrl2_g, r.ctrl3_c, r.ctrl4_c, r.ctrl6_c);
-    printf("INFO sampler poll_us=%u i2c=100kHz\n", (unsigned)IMU_POLL_US);
+    puts("INFO sampler i2c=100kHz");
 
     printf("INFO model SAMPLE_RATE_HZ=%d WIN_SAMPLES=%d STRIDE_SAMPLES=%d CONFIRM_SAMPLES=%d "
            "TILT_PRE=%d TILT_POST=%d TILT_FALLBACK=%d POST_STD=%d N_FEATURES=%d\n",

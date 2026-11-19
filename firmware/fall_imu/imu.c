@@ -4,10 +4,12 @@
  * Verified against the RIOT source (~/riotproject, fac711a2b4):
  *   drivers/lsm6dsxx/include/lsm6dsxx_internal.h: STATUS_REG 0x1E, OUTX_L_XL
  *   LSM6DS3TR-C: STATUS_REG bit0 = XLDA; CTRL3_C bit6 = BDU, bit2 = IF_INC
- *   lsm6dsxx_params.h defaults: I2C_DEV(0), addr 0x6B
+ *   boards/common/seeedstudio-xiao-nrf52840/include/board.h: I2C_DEV(1), addr 0x6A
  */
 #include <stdint.h>
+#include <string.h>
 
+#include "board.h"
 #include "thread.h"
 #include "ztimer.h"
 #include "periph/i2c.h"
@@ -17,8 +19,14 @@
 #include "fall_model.h"
 #include "imu.h"
 
-#define IMU_I2C              I2C_DEV(0)
-#define IMU_ADDR             0x6B
+/* The IMU is on the board's INTERNAL bus (I2C_DEV(1), P0.27/P0.07) at 0x6A and is
+ * powered from P1.08 by board_init(); board.h exports both as LSM6DSXX_PARAM_*.
+ * (The generic driver defaults I2C_DEV(0)/0x6B are the empty header bus.) */
+#ifndef LSM6DSXX_PARAM_I2C
+#error "board.h must define LSM6DSXX_PARAM_I2C / LSM6DSXX_PARAM_ADDR"
+#endif
+#define IMU_I2C              LSM6DSXX_PARAM_I2C
+#define IMU_ADDR             LSM6DSXX_PARAM_ADDR
 
 #define STATUS_XLDA          (0x01u)
 #define CTRL3_C_BDU          (0x40u)      /* block data update */
@@ -220,6 +228,7 @@ uint32_t imu_i2c_errors(void) { return _i2c_err; }
 int imu_read_regs(imu_regs_t *r)
 {
     int e = 0;
+    memset(r, 0, sizeof(*r));
     e |= _reg_rd(LSM6DSXX_REG_WHO_AM_I, &r->who_am_i) < 0;
     e |= _reg_rd(LSM6DSXX_REG_CTRL1_XL, &r->ctrl1_xl) < 0;
     e |= _reg_rd(LSM6DSXX_REG_CTRL2_G,  &r->ctrl2_g)  < 0;
@@ -230,3 +239,6 @@ int imu_read_regs(imu_regs_t *r)
     r->ok = !e;
     return e ? -1 : 0;
 }
+
+unsigned imu_i2c_bus(void)  { return (unsigned)IMU_I2C; }
+unsigned imu_i2c_addr(void) { return (unsigned)IMU_ADDR; }

@@ -49,5 +49,7 @@ int  imu_pop(imu_sample_t *s);     /* non-blocking; 1 = got a sample */
 uint32_t imu_overruns(void);       /* samples dropped because the ring was full */
 uint32_t imu_i2c_errors(void);
 int imu_read_regs(imu_regs_t *r);
+unsigned imu_i2c_bus(void);        /* I2C_DEV index in use */
+unsigned imu_i2c_addr(void);       /* 7-bit address in use */
 
 #endif /* IMU_H */
