@@ -10,8 +10,10 @@ writes  firmware/fall_imu/data/own/<SUBJECT>_<ACTIVITY>_<TRIAL>.csv   (gitignore
         device time)
 and the full host-timestamped serial log in logs/rawlog_<ts>.log.
 
-Dropped samples are counted from t_us gaps: the nominal period is 1e6/52 us; a gap
-of dt counts as round(dt/period)-1 missing samples when dt > 1.5 periods.  A
+Dropped samples are counted from t_us gaps.  The reference period is the MEDIAN
+interval of the run itself (the LSM6DS3TR-C "52 Hz" setting really runs at ~54.4 Hz
+on this board, so the nominal 19.23 ms would undercount); a gap of dt counts as
+round(dt/period)-1 missing samples when dt > 1.5 periods.  A
 "### BOOT" banner or a backwards t_us step means the board reset (brownout): the
 CSV is NOT written and the exit code is 4 - redo the run.
 Exit codes: 0 ok, 1 dropped samples (CSV still written), 2 logger timeout,
@@ -20,12 +22,13 @@ Exit codes: 0 ok, 1 dropped samples (CSV still written), 2 logger timeout,
 import argparse
 import os
 import re
+import statistics
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import serial_log  # noqa: E402
 
-PERIOD_US = 1e6 / 52.0
+NOMINAL_PERIOD_US = 1e6 / 52.0   # only the fallback for runs with < 3 intervals
 DATA_DIR = os.path.join(serial_log.APP_DIR, "data", "own")
 ROW = re.compile(r"^(\d+),(-?\d+),(-?\d+),(-?\d+)$")
 
@@ -33,10 +36,11 @@ ROW = re.compile(r"^(\d+),(-?\d+),(-?\d+),(-?\d+)$")
 def analyse(rows):
     """rows: list of (t_us32, x, y, z) in arrival order -> dict of stats."""
     out = {"n": len(rows), "dropped": 0, "gaps": [], "reset": False,
-           "max_dt_us": 0, "mean_dt_us": 0.0, "span_s": 0.0}
+           "max_dt_us": 0, "mean_dt_us": 0.0, "median_dt_us": 0.0,
+           "rate_hz": 0.0, "span_s": 0.0, "t_unwrapped": [0] * len(rows)}
     if len(rows) < 2:
         return out
-    t_unwrapped = [0]
+    dts = []
     for i in range(1, len(rows)):
         d = rows[i][0] - rows[i - 1][0]
         if d < 0:
@@ -45,14 +49,20 @@ def analyse(rows):
                 d = 0
             else:
                 d += 1 << 32
+        dts.append(d)
+    period = statistics.median(dts) if len(dts) >= 3 else NOMINAL_PERIOD_US
+    t_unwrapped = [0]
+    for i, d in enumerate(dts, start=1):
         t_unwrapped.append(t_unwrapped[-1] + d)
-        if d > 1.5 * PERIOD_US:
-            miss = int(round(d / PERIOD_US)) - 1
+        if d > 1.5 * period:
+            miss = int(round(d / period)) - 1
             out["dropped"] += miss
             out["gaps"].append((i, d, miss))
         out["max_dt_us"] = max(out["max_dt_us"], d)
     out["span_s"] = t_unwrapped[-1] / 1e6
     out["mean_dt_us"] = t_unwrapped[-1] / (len(rows) - 1)
+    out["median_dt_us"] = period
+    out["rate_hz"] = (len(rows) - 1) / out["span_s"] if out["span_s"] else 0.0
     out["t_unwrapped"] = t_unwrapped
     return out
 
@@ -88,7 +98,8 @@ def main():
     st = analyse(rows)
     reset = st["reset"] or lg.resets > 0
     print(f"LOG {lg.path}")
-    print(f"samples={st['n']} span_s={st['span_s']:.3f} mean_dt_ms={st['mean_dt_us']/1000:.3f} "
+    print(f"samples={st['n']} span_s={st['span_s']:.3f} rate_hz={st['rate_hz']:.3f} "
+          f"mean_dt_ms={st['mean_dt_us']/1000:.3f} median_dt_ms={st['median_dt_us']/1000:.3f} "
           f"max_dt_ms={st['max_dt_us']/1000:.3f} dropped={st['dropped']} "
           f"gaps={len(st['gaps'])} resets={lg.resets} reopens={lg.reopens}")
     if summary:
