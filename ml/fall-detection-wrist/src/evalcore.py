@@ -45,7 +45,7 @@ def _group_key(tr):
     return tr["trial_id"]
 
 
-def choose_params_trigger(ds, p, trial_ids, std_default=0.08):
+def choose_params_trigger(ds, p, trial_ids, std_default=0.08, target=TARGET_RECALL):
     """Trigger-only tuning (no confirm stage): >=95 % recall over ALL falls at the lowest trigger-only ADL false-alarm rate."""
     falls = [t for t in trial_ids if ds["trials"][t]["is_fall"]]
     adl_groups = {}
@@ -56,7 +56,7 @@ def choose_params_trigger(ds, p, trial_ids, std_default=0.08):
     sc = trial_scores(ds, p, falls + [t for g in adl_groups.values() for t in g], std_default)
     fs_ = np.array([sc[t][0] for t in falls]); as_ = np.array([max(sc[t][0] for t in g) for g in adl_groups.values()])
     fr = (fs_[None, :] >= THR_GRID[:, None]).mean(1); af = (as_[None, :] >= THR_GRID[:, None]).mean(1)
-    ok = np.where(fr >= TARGET_RECALL)[0]
+    ok = np.where(fr >= target)[0]
     k = ok[np.lexsort((-THR_GRID[ok], af[ok]))[0]] if len(ok) else np.lexsort((af, -fr))[0]
     return dict(thr=float(THR_GRID[k]), std=float(std_default), recall=float(fr[k]), far=float(af[k]), feasible=bool(len(ok)),
                 n_falls=len(falls), n_adl_trials=len(adl_groups))
@@ -151,6 +151,7 @@ def metric_defs(df):
     d["fa_per_hour_trials"] = ((adl & df.conf.values).astype(float), np.where(adl, h, 0.0))
     d["fa_per_hour_events"] = (np.where(adl, df.ev_conf.values, 0).astype(float), np.where(adl, h, 0.0))
     d["fa_per_hour_trigger_events"] = (np.where(adl, df.ev_trig.values, 0).astype(float), np.where(adl, h, 0.0))
+    d["fa_per_hour_trigger_trials"] = ((adl & df.trig.values).astype(float), np.where(adl, h, 0.0))
     for g in ("young", "old"):
         m = adl & (df.group.values == g)
         d[f"adl_far_confirm_{g}"] = (m & df.conf.values, m)
@@ -161,6 +162,9 @@ def metric_defs(df):
         d[f"fall_recall_trigger[{ds_}]"] = (mf & df.trig.values, mf)
         d[f"fall_recall_confirm[{ds_}]"] = (mf & elig & df.conf.values, mf & elig)
         d[f"adl_far_confirm[{ds_}]"] = (ma & df.conf.values, ma)
+        d[f"adl_far_trigger[{ds_}]"] = (ma & df.trig.values, ma)
+        d[f"fa_per_hour_trigger_trials[{ds_}]"] = ((ma & df.trig.values).astype(float), np.where(ma, h, 0.0))
+        d[f"fa_per_hour_trigger_events[{ds_}]"] = (np.where(ma, df.ev_trig.values, 0).astype(float), np.where(ma, h, 0.0))
     for ft in sorted(df[df.is_fall].ftype.unique()):
         mf = fall & (df.ftype.values == ft)
         d[f"fall_recall_trigger[{ft}]"] = (mf & df.trig.values, mf)
@@ -189,3 +193,44 @@ def summarize(df, B=2000, seed=0):
         lo, hi = (np.percentile(bs, [2.5, 97.5]) if len(bs) > 20 else (np.nan, np.nan))
         rows.append(dict(metric=k, value=val, lo=lo, hi=hi, n_num=float(tn), n_den=float(td)))
     return pd.DataFrame(rows)
+
+
+def paired_diff(dfa, dfb, metrics, B=2000, seed=0):
+    """Paired subject bootstrap of metric(A) - metric(B) on the same trial set (rows may be in different order).
+    -> DataFrame(metric, diff, lo, hi)."""
+    da, db = metric_defs(dfa), metric_defs(dfb)
+    subs = np.unique(np.concatenate([dfa.subject.values, dfb.subject.values]))
+    idx = {s_: i for i, s_ in enumerate(subs)}
+    S = len(subs)
+    rng = np.random.default_rng(seed)
+    Wt = rng.multinomial(S, np.ones(S) / S, size=B).astype(float)
+
+    def per_subject(d, df, k):
+        num, den = d[k]
+        inv = np.array([idx[s_] for s_ in df.subject.values])
+        return (np.bincount(inv, weights=np.asarray(num, dtype=float), minlength=S), np.bincount(inv, weights=np.asarray(den, dtype=float), minlength=S))
+    rows = []
+    for k in metrics:
+        na, dna = per_subject(da, dfa, k); nb, dnb = per_subject(db, dfb, k)
+        val = na.sum() / dna.sum() - nb.sum() / dnb.sum()
+        with np.errstate(invalid="ignore", divide="ignore"):
+            bs = (Wt @ na) / (Wt @ dna) - (Wt @ nb) / (Wt @ dnb)
+        bs = bs[np.isfinite(bs)]
+        rows.append(dict(metric=k, diff=float(val), lo=float(np.percentile(bs, 2.5)), hi=float(np.percentile(bs, 97.5))))
+    return pd.DataFrame(rows)
+
+
+def adl_breakdown(df, names, top=5):
+    """ADL false-alarm (trigger-only) breakdown per dataset: top activities by number of alarmed trials."""
+    a = df[~df.is_fall]
+    out = []
+    for ds_, g in a.groupby("dataset"):
+        tot = int(g.trig.sum())
+        t = g.groupby("ftype").agg(trials=("trig", "size"), alarmed=("trig", "sum"), hours=("dur_s", lambda x: x.sum() / 3600.0)).reset_index()
+        t["far"] = t.alarmed / t.trials
+        t["share_of_dataset_FAs"] = t.alarmed / max(tot, 1)
+        t = t.sort_values(["alarmed", "far"], ascending=False).head(top)
+        t.insert(0, "dataset", ds_)
+        t["activity"] = [names.get(k, k) for k in t.ftype]
+        out.append(t)
+    return pd.concat(out, ignore_index=True)

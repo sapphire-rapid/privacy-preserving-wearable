@@ -121,6 +121,36 @@ def fall_label_start(m, n, c):
     return max(0, min(s, n - c.win)), peak
 
 
+# ---------------------------------------------------------------- v3: orientation-invariant gyro features (dps, same 2 s window)
+GYRO_NAMES = ["gyro_max", "gyro_mean", "gyro_std", "gyro_rot_win", "gyro_rot_peak", "gyro_peak_offset_s"]
+FEATURE_NAMES_V3 = FEATURE_NAMES + GYRO_NAMES      # 15 features; first 9 are the unchanged accelerometer features
+
+
+def gyro_features_of_window(wa, wg, c):
+    """|w| max / mean / std; integrated rotation angle sum(|w|*dt) over the window [deg]; the same within +-0.5 s of the |a| peak;
+    signed time offset (|w| peak - |a| peak) [s]."""
+    m = mag(wa); wm = mag(wg)
+    p = int(np.argmax(m))
+    lo, hi = max(0, p - c.tilt_pre), min(len(wm), p + c.tilt_pre + 1)
+    return [float(wm.max()), float(wm.mean()), float(wm.std()), float(wm.sum() / c.fs), float(wm[lo:hi].sum() / c.fs),
+            float((int(np.argmax(wm)) - p) / c.fs)]
+
+
+def gyro_window_features(xa, xg, starts, c):
+    xa = np.asarray(xa, dtype=np.float64); xg = np.asarray(xg, dtype=np.float64)
+    starts = np.asarray(starts, dtype=np.int64)
+    idx = starts[:, None] + np.arange(c.win)[None, :]
+    ma = mag(xa)[idx]; wm = mag(xg)[idx]
+    p = ma.argmax(1)
+    out = np.empty((len(starts), 6))
+    out[:, 0] = wm.max(1); out[:, 1] = wm.mean(1); out[:, 2] = wm.std(1); out[:, 3] = wm.sum(1) / c.fs
+    pos = np.arange(c.win)[None, :]
+    near = (pos >= (p - c.tilt_pre)[:, None]) & (pos <= (p + c.tilt_pre)[:, None])
+    out[:, 4] = (wm * near).sum(1) / c.fs
+    out[:, 5] = (wm.argmax(1) - p) / c.fs
+    return out
+
+
 def stillness_stats(m, starts, c):
     """Per window: (evaluable, std, mean) of the CONFIRM samples following the window (std ddof=0)."""
     n = len(m)
@@ -142,14 +172,20 @@ def stretch(x, f):
     return resample_poly(np.asarray(x, dtype=np.float64), r.numerator, r.denominator, axis=0, padtype="line")
 
 
-def trial_windows(x, is_fall, c):
-    """Windows used for TRAINING from one trial (ADL: all sliding; fall: the impact window)."""
+def trial_windows(x, is_fall, c, xg=None):
+    """Windows used for TRAINING from one trial (ADL: all sliding; fall: the impact window).  xg given -> 15 features (v3)."""
     x = np.asarray(x, dtype=np.float64)
     n = len(x)
+    nf = 9 if xg is None else 15
     if n < c.win:
-        return np.zeros((0, 9)), np.zeros(0, dtype=int)
+        return np.zeros((0, nf)), np.zeros(0, dtype=int)
     if is_fall:
         s, _ = fall_label_start(mag(x), n, c)
-        return window_features(x, np.array([s]), c), np.ones(1, dtype=int)
-    st = sliding_starts(n, c)
-    return window_features(x, st, c), np.zeros(len(st), dtype=int)
+        st, y = np.array([s]), np.ones(1, dtype=int)
+    else:
+        st = sliding_starts(n, c)
+        y = np.zeros(len(st), dtype=int)
+    X = window_features(x, st, c)
+    if xg is not None:
+        X = np.hstack([X, gyro_window_features(x, xg, st, c)])
+    return X, y

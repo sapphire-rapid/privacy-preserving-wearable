@@ -24,6 +24,8 @@ def main():
     ops = dict(spec=E.choose_params(ctx.ds, p_oof, tids, F.STD_GRID),
                ext=E.choose_params(ctx.ds, p_oof, tids, F.STD_GRID_EXT),
                trig=E.choose_params_trigger(ctx.ds, p_oof, tids))
+    for t in (0.80, 0.85, 0.90, 0.95):       # trigger-only operating points for the recall targets (pooled 5-fold CV thresholds)
+        ops["trig%d" % round(t * 100)] = E.choose_params_trigger(ctx.ds, p_oof, tids, target=t)
     m = ctx.fit("lr", subj)
     out = dict(fs=26, n_subjects=len(subj), n_train_windows=int(len(ctx.ds["ytr"])), n_pos=int(ctx.ds["ytr"].sum()),
                mean=m.scaler.mean_.tolist(), scale=m.scaler.scale_.tolist(), coef=m.clf.coef_[0].tolist(),

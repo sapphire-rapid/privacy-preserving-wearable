@@ -22,7 +22,7 @@ ROOT = os.path.dirname(HERE)
 CACHE = os.path.join(ROOT, "cache")
 
 
-def build(trials_in, fs, train=True):
+def build(trials_in, fs, train=True, gyro_key=None):
     c = F.cfg_for(fs)
     trials, Xw, EV, SD, MU, WT, WS = [], [], [], [], [], [], []
     Xtr, ytr, ttr, ftr = [], [], [], []
@@ -32,10 +32,17 @@ def build(trials_in, fs, train=True):
         n = len(x)
         if n < c.win:
             continue
+        xg = None
+        if gyro_key is not None:
+            if not r.get("gyro_ok"):
+                continue
+            xg = r[gyro_key].astype(np.float64)
         tid = len(trials)
         m = F.mag(x)
         st = F.sliding_starts(n, c)
         xw = F.window_features(x, st, c)
+        if xg is not None:
+            xw = np.hstack([xw, F.gyro_window_features(x, xg, st, c)])
         ev, sd, mu = F.stillness_stats(m, st, c)
         peak = int(np.argmax(m))
         t = dict(tid=tid, trial_id=r["trial_id"], seg=r["seg"], subject=r["subject"], dataset=r["dataset"], group=r["group"],
@@ -59,7 +66,7 @@ def build(trials_in, fs, train=True):
         if train:
             for f in F.STRETCH:
                 xs = F.stretch(x, f)
-                xt, yt = F.trial_windows(xs, r["is_fall"], c)
+                xt, yt = F.trial_windows(xs, r["is_fall"], c, None if xg is None else F.stretch(xg, f))
                 if len(xt):
                     Xtr.append(xt); ytr.append(yt); ttr.append(np.full(len(yt), tid)); ftr.append(np.full(len(yt), f))
     ds = dict(fs=fs, trials=trials, Xw=np.vstack(Xw), ev=np.concatenate(EV), sd=np.concatenate(SD), mu=np.concatenate(MU),
@@ -69,7 +76,26 @@ def build(trials_in, fs, train=True):
     return ds
 
 
+def main_v3():
+    """v3 populations: W = WEDA only, native gyro range; P = WEDA (clipped to +-125 dps/axis) + SmartFallMM (synced gyro, natively +-125 dps)."""
+    weda = pickle.load(open(os.path.join(CACHE, "weda.pkl"), "rb"))
+    sfmm = pickle.load(open(os.path.join(CACHE, "sfmm.pkl"), "rb"))
+    for name, trials, key in (("v3W", weda, "g26"), ("v3P", None, "g26c")):
+        if trials is None:
+            trials = []
+            for r in weda + sfmm:
+                trials.append(r)
+        ds = build(trials, 26, train=True, gyro_key=key)
+        with open(os.path.join(CACHE, "ds_%s_26.pkl" % name), "wb") as f:
+            pickle.dump(ds, f, protocol=4)
+        tr = ds["trials"]; falls = [t for t in tr if t["is_fall"]]
+        print(f"{name}: trials {len(tr)} (falls {len(falls)}, ADL segments {len(tr)-len(falls)}), subjects {len({t['subject'] for t in tr})}, "
+              f"eval windows {len(ds['Xw'])} x {ds['Xw'].shape[1]}, train windows {len(ds['ytr'])} (pos {int(ds['ytr'].sum())}), confirm-eligible falls {sum(t['elig'] for t in falls)}", flush=True)
+
+
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "v3":
+        return main_v3()
     pool = []
     for name in ("weda", "sfmm"):
         pool += pickle.load(open(os.path.join(CACHE, name + ".pkl"), "rb"))

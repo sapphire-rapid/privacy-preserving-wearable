@@ -65,6 +65,42 @@
    "feasible": true,
    "n_falls": 1041,
    "n_adl_trials": 2393
+  },
+  "trig80": {
+   "thr": 0.934,
+   "std": 0.08,
+   "recall": 0.8001921229586936,
+   "far": 0.162975344755537,
+   "feasible": true,
+   "n_falls": 1041,
+   "n_adl_trials": 2393
+  },
+  "trig85": {
+   "thr": 0.897,
+   "std": 0.08,
+   "recall": 0.8520653218059558,
+   "far": 0.1980777267028834,
+   "feasible": true,
+   "n_falls": 1041,
+   "n_adl_trials": 2393
+  },
+  "trig90": {
+   "thr": 0.835,
+   "std": 0.08,
+   "recall": 0.9000960614793467,
+   "far": 0.22941913915587128,
+   "feasible": true,
+   "n_falls": 1041,
+   "n_adl_trials": 2393
+  },
+  "trig95": {
+   "thr": 0.671,
+   "std": 0.08,
+   "recall": 0.9500480307396734,
+   "far": 0.3347262849979106,
+   "feasible": true,
+   "n_falls": 1041,
+   "n_adl_trials": 2393
   }
  }
 }

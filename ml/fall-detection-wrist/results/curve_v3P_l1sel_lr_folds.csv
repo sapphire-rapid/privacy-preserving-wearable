@@ -1,0 +1,6 @@
+fold,C,selected,thr@80,thr@85,thr@90,thr@95
+0,0.003,min_mag range_mag max_jerk std_mag_post tilt_deg gyro_mean gyro_std gyro_rot_win gyro_rot_peak gyro_peak_offset_s,0.928,0.903,0.847,0.75
+1,0.003,min_mag range_mag max_jerk std_mag_post tilt_deg gyro_mean gyro_std gyro_rot_win gyro_rot_peak gyro_peak_offset_s,0.932,0.893,0.832,0.749
+2,0.03,min_mag mean_mag std_mag range_mag max_jerk std_mag_post count_low tilt_deg gyro_mean gyro_std gyro_rot_win gyro_rot_peak gyro_peak_offset_s,0.928,0.888,0.828,0.695
+3,0.003,min_mag range_mag max_jerk std_mag_post tilt_deg gyro_mean gyro_std gyro_rot_win gyro_rot_peak,0.921,0.877,0.82,0.67
+4,0.03,min_mag std_mag range_mag max_jerk std_mag_post count_low tilt_deg gyro_max gyro_mean gyro_std gyro_rot_win gyro_rot_peak gyro_peak_offset_s,0.933,0.896,0.832,0.69
