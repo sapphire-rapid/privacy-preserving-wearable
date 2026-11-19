@@ -32,4 +32,13 @@ static const float STILL_MEAN_TOL = 0.2f;
 #define STRIDE_SAMPLES 26
 #define SAMPLE_RATE_HZ 52
 
+/* ---- rate-dependent constants (all in samples at SAMPLE_RATE_HZ) ----------
+ * A model retrained at another rate swaps this header; no code changes.
+ * The IMU ODR is derived from SAMPLE_RATE_HZ in imu.c (26/52/104 supported).
+ */
+#define TILT_PRE_SAMPLES       26   /* tilt "before" mean: samples before peak   */
+#define TILT_POST_SAMPLES      26   /* tilt "after" mean: last samples of window */
+#define TILT_FALLBACK_SAMPLES  10   /* tilt "before" = first N when peak < PRE   */
+#define POST_STD_SAMPLES       52   /* std_mag_post: last 1 s of the window      */
+
 #endif
