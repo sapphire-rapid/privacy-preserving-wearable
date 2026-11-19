@@ -135,6 +135,43 @@ sequence ends and are not counted as CONFIRMED.
 **Skipped by decision**: the current model is waist-trained; live testing waits for the
 retrained model. The `l` mode is implemented and exercised only through the replay path.
 
-## 5. Step 3d — raw log (`w`) — TODO (measure)
+## 5. Step 3d — raw log (`w`, 52 Hz setting)
+
+Format: `t_us,ax_mg,ay_mg,az_mg` (device `ztimer_usec` 32-bit timestamp at XLDA
+detection; mg are the driver's counts×16000/32767 at ±16 g). `host/record.py` unwraps
+`t_us`, counts drops against the run's own median interval, and writes
+`data/own/<subject>_<activity>_<trial>.csv` (gitignored).
+
+**Run 1 — 120 s (`rawlog_20261119-122224.log`, `data/own/S01_still_1.csv`).** Intended as
+60 s still + 60 s wave, but the board did not move at all (|a| σ 0.0008 g in both
+"phases", axis σ < 1 mg): it is a valid 120 s *still* recording, not a wave test.
+6514 samples, 0 dropped, 0 overruns, 0 I2C errors, 0 resets, rate 54.354 Hz.
+
+**Run 2 — 130 s, still then wave (`rawlog_20261119-122732.log`,
+`data/own/S01_still-wave_2.csv`).** Phases found from the data (|a| σ over 1 s windows):
+still 0–~57 s (|a| σ 0.0007 g, 1.0451–1.0455 g), sustained gentle motion from ~57 s to the
+end (|a| 0.32–3.27 g, 5 s σ up to 0.31 g; the 3.27 g peak is in the last 5 s, presumably
+putting the board down).
+
+| quantity | value |
+|---|---|
+| samples / span | 7056 / 129.730 s |
+| **dropped samples (t_us gaps > 1.5 × median)** | **0** (no gap above 20.019 ms) |
+| firmware counters | `RAWLOG samples=7056 overruns=0 i2c_errors=0` |
+| device resets / USB re-enumerations | 0 / 0 |
+| **measured rate from t_us** | **54.382 Hz** overall; 54.388 Hz in the still phase, 54.380 Hz while moving |
+| median / mean / max interval | 18.000 / 18.388 / 20.019 ms |
+| interval histogram | 18 ms ×5682, 20 ms ×1372, one 14 ms (first interval, see below) |
+| per-second counts | 54 ×79, 55 ×50 (spread 1) |
+
+**3d PASS (0 dropped samples, 2 min recording).** Rate is the same as in 3a within
+0.01 Hz (54.378 → 54.382 Hz), and is the same while still and while moving.
+The 18/20 ms interval pattern is the 2 ms DRDY poll quantising a ~18.4 ms period
+(not a sensor property).
+
+Start-up artifact: the first interval after `w` starts is short (6 ms in run 1, 14 ms in
+run 2) because the first sample read is one already latched in the sensor before the mode
+started (XLDA was still set). It is not a drop; ignore row 0's timestamp. Not fixed
+(no firmware changes in this phase); fix = discard the first sample in `imu_start()`.
 
 ## 6. Six-position calibration — TODO (measure)
