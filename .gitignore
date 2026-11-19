@@ -35,3 +35,10 @@ Thumbs.db
 # MkDocs build output
 site/
 _site/
+
+# Local artifacts
+firmware/fall_imu/host/host_test
+.commandcode/
+*.bak*
+logs/
+firmware/*/data/

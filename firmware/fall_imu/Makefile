@@ -2,7 +2,7 @@ APPLICATION = fall_imu
 
 BOARD ?= seeedstudio-xiao-nrf52840-sense
 
-RIOTBASE ?= $(CURDIR)/../../riotproject
+RIOTBASE ?= $(HOME)/riotproject
 
 # Sensor + timers
 USEMODULE += lsm6dsxx

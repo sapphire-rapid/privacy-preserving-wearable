@@ -1,7 +1,7 @@
 APPLICATION = max30102_probe
 
 BOARD ?= seeedstudio-xiao-nrf52840-sense
-RIOTBASE ?= $(CURDIR)/../../riotproject
+RIOTBASE ?= $(HOME)/riotproject
 CFLAGS += -DCONFIG_IEEE802154_DEFAULT_TXPOWER=8
 
 USEMODULE += netdev_default
