@@ -14,7 +14,8 @@ from scipy.signal import resample_poly
 FEATURE_NAMES = ["max_mag", "min_mag", "mean_mag", "std_mag", "range_mag",
                  "max_jerk", "std_mag_post", "count_low", "tilt_deg"]
 STRETCH = (0.95, 1.00, 1.05)
-STD_GRID = (0.05, 0.065, 0.08)
+STD_GRID = (0.05, 0.065, 0.08)                      # as specified
+STD_GRID_EXT = (0.05, 0.065, 0.08, 0.12, 0.2, 0.3)   # sensitivity: wider stillness tolerance (wrist is rarely this still)
 MEAN_TOL = 0.2
 
 
