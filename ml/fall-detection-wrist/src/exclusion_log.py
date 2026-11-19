@@ -43,11 +43,11 @@ A(f"- Rule 4 (rest |a| of `acg` within 1 ± 0.1 g): **{len(b4)}** of {len(bits)}
 ok4 = [r for r in bits if r["rule4_pass"]]
 b5 = [r for r in ok4 if not r["rule5_pass"]]
 A(f"- Rule 5 (|first→last timestamp span − N/20| > 10 % ⇒ drop, timestamps taken as ns): **{len(b5)}** of {len(ok4)} remaining files fail "
-  f"({sum(r['is_fall'] for r in b5)} of {sum(r['is_fall'] for r in ok4)} falls). **Not applied** — it would leave {len(ok4)-len(b5)} files, and the check is uninformative because timestamps carry only 3 significant digits "
-  "(see §0.5 and REPORT). Waiting for a decision.")
+  f"({sum(r['is_fall'] for r in b5)} of {sum(r['is_fall'] for r in ok4)} falls). **Skipped by decision**: it would leave {len(ok4)-len(b5)} files, and the check is uninformative because timestamps carry only 3 significant digits "
+  "(see §0.5). **Assumption: BITS is 20 Hz by sample order** (nominal rate from the dataset paper; not verifiable from the files). The BITS run is on hold.")
 A("\n## 6. Addenda after the BITS paper lookup\n")
 A("Read by a sub-agent from https://pmc.ncbi.nlm.nih.gov/articles/PMC10709028/ (Nandi et al., Data in Brief 52 (2024) 109812); not independently re-verified:\n"
-  "- 41 volunteers, **ages 20–47 (mean ≈ 27.9)**, 27 male / 14 female — i.e. **not geriatric** despite the folder name; wrist-worn device (Snapdragon 820c, MPU6500, MAX30102).\n"
+  "- 41 volunteers, **ages 20–47 (mean ≈ 27.9)**, 27 male / 14 female — i.e. an adult cohort, **not geriatric** (the on-disk folder is still called `bits_geriatric`); wrist-worn device (Snapdragon 820c, MPU6500, MAX30102).\n"
   "- 16 ADLs and 8 falls, 5 repeats each; motion sensors 20 Hz, HR 1 Hz. The article's tag descriptions say `acc` = accelerometer and `acg` = *linear* accelerometer — **the opposite of what the data show** (`acg` carries gravity, rest ≈ 9.81 m/s²; `acc` rest ≈ 0.14 m/s²). The measurement is used, not the prose.\n"
   "- ADL list: 1 walking slowly, 2 walking quickly, 3 jogging, 4 jumping, 5 climbing up slowly, 6 climbing down slowly, 7 climbing up normally, 8 climbing down normally, 9 slowly sitting on chair, 10 rapidly sitting on chair, 11 nearly sitting and getting up, 12 swinging hands, 13 lying on bed, 14 lying on back and getting up slowly, 15 … normally, 16 sideways → back transition.\n"
   "- Fall list: 1 forward fall landing on knee, 2 right fall, 3 left fall, 4 forward fall, 5 seated on bed falling to ground, 6 forward fall, body weight on hand, 7 backward fall from seated, 8 grabbing while falling.\n"

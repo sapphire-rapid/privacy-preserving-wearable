@@ -108,7 +108,7 @@ def load_sfmm(path):
 
 
 # ----------------------------------------------------------------------------
-# BITS geriatric: one CSV per trial, header "t,x,y,z,a,", sensor blocks tagged in the LAST column:
+# BITS wrist IMU+HR (ages 20-47; on-disk folder is misleadingly named bits_geriatric): one CSV per trial, header "t,x,y,z,a,", sensor blocks tagged in the LAST column:
 #   acc / acg / gyro / mgm : x,y,z,3,<tag>        hrt : <hr>,<status>,hrt,,
 # ----------------------------------------------------------------------------
 def bits_trials():
@@ -163,3 +163,45 @@ def parse_bits_hr(path):
         return None
     h = raw["hrt"]
     return h["t"], h["v"][:, 0], h["v"][:, 1]
+
+
+# ----------------------------------------------------------------------------
+# Gyroscope loaders (v3 feature set)
+# ----------------------------------------------------------------------------
+def load_weda_gyro(path):
+    """-> t [s], xyz [native units]; same CSV layout as the accel file (gyro_time_list, gyro_x/y/z_list)."""
+    a = np.loadtxt(path, delimiter=",", skiprows=1, dtype=np.float64, ndmin=2)
+    return a[:, 0], a[:, 1:4]
+
+
+def sfmm_gyro_path(tr):
+    """Meta_wrist gyroscope file of a SmartFallMM trial dict (from sfmm_trials), or None."""
+    p = os.path.join(SFMM_ROOT, tr["group"], "gyroscope", "meta_wrist", os.path.basename(tr["path"]))
+    return p if os.path.exists(p) else None
+
+
+def load_sfmm_gyro(path):
+    """-> t [s since epoch, UTC-naive], xyz [native units].
+    Young files: 6 columns (epoch ms, ISO 'T' time, elapsed s, x, y, z) like the accelerometer.
+    Old files:   4 columns ('YYYY-MM-DD HH:MM:SS.fff', x, y, z) -- no epoch / elapsed column."""
+    t, xyz = [], []
+    with open(path) as f:
+        for line in f:
+            p = line.strip().split(",")
+            try:
+                if len(p) >= 6:
+                    ti = datetime.fromisoformat(p[1]); v = (float(p[3]), float(p[4]), float(p[5]))
+                elif len(p) == 4:
+                    ti = datetime.fromisoformat(p[0]); v = (float(p[1]), float(p[2]), float(p[3]))
+                else:
+                    continue
+            except ValueError:
+                continue
+            t.append(ti.replace(tzinfo=timezone.utc).timestamp()); xyz.append(v)
+    return np.asarray(t), np.asarray(xyz).reshape(-1, 3)
+
+
+def bits_gyro(path):
+    """BITS `gyro` block (t raw 3 s.f., xyz native) -- parsing ready, UNUSED (the BITS run is on hold)."""
+    raw = load_bits_raw(path)
+    return raw["gyro"]["t"], raw["gyro"]["v"]

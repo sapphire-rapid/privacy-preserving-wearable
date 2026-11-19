@@ -63,12 +63,26 @@ def rest_g(m, n):
     return float(s[int(np.argmin(s.std(axis=1)))].mean())
 
 
-def mk(dataset, subject, group, is_fall, ftype, trial_id, seg, x, fs_in, extra=None):
+GYRO_LOG = []              # one dict per trial/segment: gyro usable or why not (written to results/gyro_status.json)
+GYRO_CLIP_DPS = 125.0      # SmartFallMM Meta_wrist gyro saturates at +-125 dps per axis; harmonised variant clips WEDA the same way
+RAD2DEG = 180.0 / np.pi
+
+
+def mk(dataset, subject, group, is_fall, ftype, trial_id, seg, x, fs_in, extra=None, gyro=None):
+    """gyro: (N,3) in dps on the SAME uniform grid as x (or None).  Stored as g26 (native range) and g26c (per-axis clip at
+    +-125 dps applied BEFORE resampling, i.e. what a +-125 dps sensor would have recorded)."""
     d = to_rates(np.asarray(x, dtype=np.float64), fs_in)
     r = dict(dataset=dataset, subject=subject, group=group, is_fall=bool(is_fall), ftype=ftype,
              trial_id=trial_id, seg=seg, fs_in=float(fs_in), ratio_err=d[1])
     for fs in RATES:
         r["x%d" % fs] = d[0][fs].astype(np.float32)
+    r["gyro_ok"] = gyro is not None
+    if gyro is not None:
+        gyro = np.asarray(gyro, dtype=np.float64)
+        assert len(gyro) == len(x)
+        r["g26"] = resample_to(gyro, fs_in, 26)[0].astype(np.float32)
+        r["g26c"] = resample_to(np.clip(gyro, -GYRO_CLIP_DPS, GYRO_CLIP_DPS), fs_in, 26)[0].astype(np.float32)
+        assert len(r["g26"]) == len(r["x26"])
     if extra:
         r.update(extra)
     return r
@@ -82,9 +96,23 @@ def build_weda(excl):
         g = a / W.G
         fs = (len(t) - 1) / float(t[-1] - t[0])
         sid = "W%02d" % tr["subject"]
+        tid = "W_%s_U%02d_R%02d" % (tr["code"], tr["subject"], tr["trial"])
+        gyr = None
+        gp = tr["path"].replace("_accel.csv", "_gyro.csv")
+        if os.path.exists(gp):
+            tg, gg = W.load_weda_gyro(gp)
+            offs = (float(tg[0] - t[0]), float(tg[-1] - t[-1]))
+            if max(abs(offs[0]), abs(offs[1])) <= 0.5 and len(tg) > 5:
+                fs_g = (len(tg) - 1) / float(tg[-1] - tg[0])
+                ta_lin = t[0] + np.arange(len(t)) / fs                  # same per-trial linear axes as the accel
+                tg_lin = tg[0] + np.arange(len(tg)) / fs_g
+                gyr = np.column_stack([np.interp(ta_lin, tg_lin, gg[:, i]) for i in range(3)]) * RAD2DEG   # rad/s -> dps
+            GYRO_LOG.append(dict(dataset="WEDA", trial=tid, ok=gyr is not None, off_first=offs[0], off_last=offs[1]))
+        else:
+            GYRO_LOG.append(dict(dataset="WEDA", trial=tid, ok=False, reason="no gyro file"))
         out.append(mk("WEDA", sid, "young" if tr["subject"] <= 14 else "old", tr["is_fall"], tr["code"],
-                      "W_%s_U%02d_R%02d" % (tr["code"], tr["subject"], tr["trial"]), 0, g, fs,
-                      dict(native_rate=fs)))
+                      tid, 0, g, fs,
+                      dict(native_rate=fs), gyro=gyr))
     return out
 
 
@@ -121,6 +149,13 @@ def build_sfmm(excl):
         sid = "S%02d" % tr["subject"]
         tid = "S_%s" % name[:-4]
         n_kept = 0
+        gp = W.sfmm_gyro_path(tr)
+        tg = gg = None
+        if gp is not None:
+            tg0, gg0 = W.load_sfmm_gyro(gp)
+            if len(tg0) > 5:
+                kg = np.concatenate([[True], tg0[1:] > np.maximum.accumulate(tg0)[:-1]])
+                tg, gg = tg0[kg], gg0[kg]
         for k, (lo, hi, tt, aa, n_drop) in enumerate(segs):
             if tr["is_fall"] and not (lo <= peak < hi):
                 excl.append(dict(dataset="SFMM", file=name, reason="fall: segment %d does not contain the impact peak (dropped)" % k, fall=True, kind="segment"))
@@ -134,8 +169,18 @@ def build_sfmm(excl):
             fs = (len(tt) - 1) / float(tt[-1] - tt[0])
             grid = tt[0] + np.arange(int((tt[-1] - tt[0]) * fs) + 1) / fs
             xg = np.column_stack([np.interp(grid, tt, aa[:, i]) for i in range(3)])
+            gyr, why = None, "no gyro file"
+            if tg is not None:
+                inside = (tg >= tt[0] - 0.5) & (tg <= tt[-1] + 0.5)
+                if not (tg[0] <= tt[0] + 0.5 and tg[-1] >= tt[-1] - 0.5):
+                    why = "gyro does not cover the accel segment (+-0.5 s)"
+                elif inside.sum() < 5 or (np.diff(tg[inside]) > GAP_S).any():
+                    why = "gyro has a gap > 1 s inside the segment"
+                else:
+                    gyr, why = np.column_stack([np.interp(grid, tg, gg[:, i]) for i in range(3)]), "ok"     # dps already
+            GYRO_LOG.append(dict(dataset="SFMM", trial=tid, seg=k, group=tr["group"], fall=bool(tr["is_fall"]), ok=gyr is not None, reason=why))
             out.append(mk("SFMM", sid, tr["group"], tr["is_fall"], "A%02d" % tr["activity"], tid, k, xg, fs,
-                          dict(native_rate=fs, n_gap_dropped=n_drop)))
+                          dict(native_rate=fs, n_gap_dropped=n_drop), gyro=gyr))
             n_kept += 1
         if tr["is_fall"] and n_kept == 0:
             excl.append(dict(dataset="SFMM", file=name, reason="fall trial excluded: impact-peak segment unusable", fall=True, kind="trial"))
@@ -175,6 +220,9 @@ def main():
               " max ratio error: %.2e" % max(r["ratio_err"] for r in res[name]), flush=True)
     with open(os.path.join(RES, "exclusions.json"), "w") as f:
         json.dump(excl, f, indent=1)
+    with open(os.path.join(RES, "gyro_status.json"), "w") as f:
+        json.dump(GYRO_LOG, f)
+    print("gyro usable segments:", sum(g["ok"] for g in GYRO_LOG), "of", len(GYRO_LOG))
     print("exclusion entries:", len(excl))
 
 

@@ -163,7 +163,7 @@ def main():
       "You asked for the accelerometer, not linear acc ⇒ **`acg`** (the 9 features need gravity). Please confirm.")
     A(f"5. **BITS sampling rate and regularity cannot be verified**: timestamps are mangled to 3 significant digits (`1.82E+11`), so only {np.median([r['uniq_t_frac'] for r in Bt])*100:.2f} % of timestamps in a file are unique and {sum(r['nonmono_t'] for r in Bt)}/{len(Bt)} files are non-monotonic. "
       f"The only independent hint: samples-per-HR-row (HR nominally 1 Hz) has median {rq[2]:.1f} (IQR {rq[1]:.1f}–{rq[3]:.1f}, 5–95th {rq[0]:.1f}–{rq[4]:.1f}) — consistent with 20 Hz at the median but far too variable to prove it. I will treat BITS as 20 Hz by sample order, as you specified; the held-out result then carries that caveat.")
-    A("6. BITS has no README: no age, no activity legend, no fall-type labels. Per-fall-type recall and young/old ADL split are therefore **not computable on BITS** (all users are assumed geriatric from the folder name).\n")
+    A("6. BITS has no README: no age, no activity legend, no fall-type labels. Per-fall-type recall and young/old ADL split are therefore **not computable on BITS** (ages are only known from the dataset paper: 20–47, see §6).\n")
 
     # ---------------- WEDA
     r_ = q([r["rest"] for r in Wd]); mdt = q([r["med_dt"] for r in Wd]); mx = q([r["max_dt"] for r in Wd])
@@ -233,12 +233,12 @@ def main():
     # ---------------- BITS
     ra = q([r["rest_acc"] for r in Bt]); rg = q([r["rest_acg"] for r in Bt])
     tagsets = collections.Counter(tuple(r["tags"]) for r in Bt)
-    A("\n## 3. BITS geriatric — HELD-OUT test set (never used for training/tuning)\n")
+    A("\n## 3. BITS wrist IMU+HR (ages 20–47) — HELD-OUT test set (never used for training/tuning; on-disk folder `bits_geriatric`)\n")
     A("| item | value |\n|---|---|")
     A("| file format | `Dataset/{adl,fall}/user<N>/user<N>_{adl,fall}<k>.csv`; header `t,x,y,z,a,`; several sensors concatenated as contiguous blocks, tagged in the **last column**: `acc`, `acg`, `gyro`, `mgm` (`t,x,y,z,3,<tag>`) and `hrt` (`t,<hr>,<status>,hrt,,`). Tag sets per file: " + str(dict(tagsets)) + ". No README/metadata. |")
     A(f"| units / gravity | native **m/s²** (inferred): `acg` rest |a| median {rg[1]:.3f} m/s² = {rg[1]/W.G:.3f} g ⇒ **gravity included**; `acc` rest median {ra[1]:.3f} m/s² ⇒ **gravity-free linear acceleration** (§0.4). Use `acg`. |")
     A(f"| sampling rate / regularity | **unverifiable** (§0.5). Assumed 20 Hz by sample order. `acc` and `acg` have different sample counts in {sum(r['n_acc']!=r['n_acg'] for r in Bt)}/{len(Bt)} files (separate streams). |")
-    A(f"| subjects | {len({r['subject'] for r in Bt})} users (user1–user41); {len({r['subject'] for r in BD})} with ADL, {len({r['subject'] for r in BF})} with falls. Age not stated. |")
+    A(f"| subjects | {len({r['subject'] for r in Bt})} users (user1–user41); {len({r['subject'] for r in BD})} with ADL, {len({r['subject'] for r in BF})} with falls. Age not stated in the files; the dataset paper (§6) gives 20–47. |")
     A(f"| trials | **{len(Bt)}** files: **{len(BF)} fall** (8 per user), **{len(BD)} ADL** (16 per user); {sum(1 for r in Bt if r['odd_name'])} fall files named `user<N>_.fall<k>.csv` (stray dot, parsed). |")
     A(f"| ADL time | {sum(r['n_acg'] for r in BD)} acg samples = {sum(r['n_acg'] for r in BD)/20/3600:.2f} h **if 20 Hz** |")
     A("| label mapping | `adl/` → ADL, `fall/` → fall; **no activity or fall-type legend** |")
@@ -252,7 +252,7 @@ def main():
     A("| dataset | rate (measured) | units → g | gravity | fall trials | fall trials ≥3 s post-peak | ADL trials | fall subjects | ADL subjects (young/old) |\n|---|---|---|---|---|---|---|---|---|")
     A(f"| WEDA-FALL | ADL {effD[1]:.1f} / fall {effF[1]:.1f} Hz, burst-stamped | ÷9.80665 | yes | {len(F)} | {w_p3} | {len(D)} | {len(fs)} young | {len({r['subject'] for r in D if young(r)})}/{len({r['subject'] for r in D if not young(r)})} |")
     A(f"| SmartFallMM | {c50}×50 Hz, {c25}×25 Hz | none (g); {len(anom)} files bad | yes | {len(SF)} | {sf_p3} | {len(SD)} ({len(anom)} non-g) | {len(fs2)} young | {len({r['subject'] for r in SD if r['group']=='young'})}/{len({r['subject'] for r in SD if r['group']=='old'})} |")
-    A(f"| BITS (held-out) | unverified (nominal 20 Hz) | ÷9.80665 (`acg`) | yes (`acg`) | {len(BF)} | {b_p3} @20 Hz | {len(BD)} | {len({r['subject'] for r in BF})} (age n/a) | n/a |")
+    A(f"| BITS (held-out) | unverified (nominal 20 Hz) | ÷9.80665 (`acg`) | yes (`acg`) | {len(BF)} | {b_p3} @20 Hz | {len(BD)} | {len({r['subject'] for r in BF})} (ages 20–47 per paper) | n/a |")
     A("\nSubject ids will be prefixed per dataset (`W`, `S`, `B`) so GroupKFold never merges different people.\n")
     with open(os.path.join(RES, "DATA_CARD.md"), "w") as f:
         f.write("\n".join(L) + "\n")

@@ -9,7 +9,7 @@ Every figure is **measured from the raw files** by `src/data_card.py` (per-trial
 3. **SmartFallMM falls have little post-impact data:** only **383/692** fall trials have ≥ 3 s after the |a| peak (contiguous, no gap: 380/692); median 3.32 s. 'With confirm' on SmartFallMM will cover ~55 % of its falls; WEDA covers 347/350.
 4. **BITS: tag naming is the opposite of intuition.** Of the sensors in each file, `acg` is the gravity-inclusive accelerometer and `acc` is gravity-free *linear* acceleration (in 923/984 files `acc` low-passed norm < 6 and `acg` > 6 m/s²; reversed in 0; both gravity-inclusive in 61 — likely vigorous motion; neither in 0). You asked for the accelerometer, not linear acc ⇒ **`acg`** (the 9 features need gravity). Please confirm.
 5. **BITS sampling rate and regularity cannot be verified**: timestamps are mangled to 3 significant digits (`1.82E+11`), so only 0.30 % of timestamps in a file are unique and 115/984 files are non-monotonic. The only independent hint: samples-per-HR-row (HR nominally 1 Hz) has median 20.2 (IQR 7.0–51.1, 5–95th 2.0–102.4) — consistent with 20 Hz at the median but far too variable to prove it. I will treat BITS as 20 Hz by sample order, as you specified; the held-out result then carries that caveat.
-6. BITS has no README: no age, no activity legend, no fall-type labels. Per-fall-type recall and young/old ADL split are therefore **not computable on BITS** (all users are assumed geriatric from the folder name).
+6. BITS has no README: no age, no activity legend, no fall-type labels. Per-fall-type recall and young/old ADL split are therefore **not computable on BITS** (ages are only known from the dataset paper: 20–47, see §6).
 
 ## 1. WEDA-FALL (Fitbit Sense, wrist) — `WEDA-FALL/dataset/50Hz`
 
@@ -116,14 +116,14 @@ Every figure is **measured from the raw files** by `src/data_card.py` (per-trial
 
 Non-g files (median |a| outside 0.5–2 g): S06A01T01, S06A02T01, S06A02T02, S06A02T03, S06A02T04, S06A02T05, S06A03T01, S06A03T02, S06A04T01, S06A04T02, S06A04T03, S06A04T04, S06A06T01, S06A06T02, S06A06T03, S06A06T04, S06A06T05, S06A07T01, S06A07T02, S06A07T03, S06A07T04, S06A07T05, S06A08T01, S06A08T02, S06A08T03, S06A08T04, S06A08T05, S30A09T01, S30A09T02, S30A09T03, S30A09T04, S30A09T05.
 
-## 3. BITS geriatric — HELD-OUT test set (never used for training/tuning)
+## 3. BITS wrist IMU+HR (ages 20–47) — HELD-OUT test set (never used for training/tuning; on-disk folder `bits_geriatric`)
 
 | item | value |
 |---|---|
 | file format | `Dataset/{adl,fall}/user<N>/user<N>_{adl,fall}<k>.csv`; header `t,x,y,z,a,`; several sensors concatenated as contiguous blocks, tagged in the **last column**: `acc`, `acg`, `gyro`, `mgm` (`t,x,y,z,3,<tag>`) and `hrt` (`t,<hr>,<status>,hrt,,`). Tag sets per file: {('acc', 'acg', 'gyro', 'hrt', 'mgm'): 984}. No README/metadata. |
 | units / gravity | native **m/s²** (inferred): `acg` rest |a| median 9.813 m/s² = 1.001 g ⇒ **gravity included**; `acc` rest median 0.136 m/s² ⇒ **gravity-free linear acceleration** (§0.4). Use `acg`. |
 | sampling rate / regularity | **unverifiable** (§0.5). Assumed 20 Hz by sample order. `acc` and `acg` have different sample counts in 709/984 files (separate streams). |
-| subjects | 41 users (user1–user41); 41 with ADL, 41 with falls. Age not stated. |
+| subjects | 41 users (user1–user41); 41 with ADL, 41 with falls. Age not stated in the files; the dataset paper (§6) gives 20–47. |
 | trials | **984** files: **328 fall** (8 per user), **656 ADL** (16 per user); 4 fall files named `user<N>_.fall<k>.csv` (stray dot, parsed). |
 | ADL time | 405835 acg samples = 5.64 h **if 20 Hz** |
 | label mapping | `adl/` → ADL, `fall/` → fall; **no activity or fall-type legend** |
@@ -138,7 +138,7 @@ HR parsing (`wrist_io.parse_bits_hr`) is written but **not used**.
 |---|---|---|---|---|---|---|---|---|
 | WEDA-FALL | ADL 49.7 / fall 39.8 Hz, burst-stamped | ÷9.80665 | yes | 350 | 347 | 619 | 14 young | 14/11 |
 | SmartFallMM | 1959×50 Hz, 535×25 Hz | none (g); 32 files bad | yes | 692 | 383 | 1807 (32 non-g) | 31 young | 31/24 |
-| BITS (held-out) | unverified (nominal 20 Hz) | ÷9.80665 (`acg`) | yes (`acg`) | 328 | 280 @20 Hz | 656 | 41 (age n/a) | n/a |
+| BITS (held-out) | unverified (nominal 20 Hz) | ÷9.80665 (`acg`) | yes (`acg`) | 328 | 280 @20 Hz | 656 | 41 (ages 20–47 per paper) | n/a |
 
 Subject ids will be prefixed per dataset (`W`, `S`, `B`) so GroupKFold never merges different people.
 
@@ -232,14 +232,41 @@ Rules (all fixed before any model was trained): SmartFallMM — ISO time string 
 ### BITS selection counts (pre-specified rules)
 
 - Rule 4 (rest |a| of `acg` within 1 ± 0.1 g): **72** of 984 files fail (0 falls, 72 ADL); 912 remain (328 falls, 584 ADL). Failing files: B_adl12_u01, B_adl12_u07, B_adl12_u08, B_adl12_u09, B_adl12_u17, B_adl12_u21, B_adl12_u28, B_adl12_u33, B_adl12_u34, B_adl2_u03, B_adl2_u12, B_adl2_u16, B_adl2_u17, B_adl2_u22, B_adl2_u32, B_adl3_u01, B_adl3_u06, B_adl3_u07, B_adl3_u08, B_adl3_u11, B_adl3_u12, B_adl3_u13, B_adl3_u15, B_adl3_u16, B_adl3_u18, B_adl3_u19, B_adl3_u20, B_adl3_u22, B_adl3_u24, B_adl3_u27, B_adl3_u30, B_adl3_u33, B_adl3_u35, B_adl3_u37, B_adl3_u38, B_adl4_u01, B_adl4_u04, B_adl4_u08, B_adl4_u09, B_adl4_u12, B_adl4_u13, B_adl4_u18, B_adl4_u19, B_adl4_u20, B_adl4_u22, B_adl4_u23, B_adl4_u25, B_adl4_u32, B_adl4_u36, B_adl4_u37, B_adl4_u38, B_adl4_u41, B_adl7_u01, B_adl7_u07, B_adl7_u08, B_adl7_u09, B_adl7_u17, B_adl7_u19, B_adl7_u24, B_adl8_u01, B_adl8_u04, B_adl8_u07, B_adl8_u12, B_adl8_u13, B_adl8_u16, B_adl8_u22, B_adl8_u23, B_adl8_u24, B_adl8_u28, B_adl8_u32, B_adl8_u37, B_adl8_u40.
-- Rule 5 (|first→last timestamp span − N/20| > 10 % ⇒ drop, timestamps taken as ns): **900** of 912 remaining files fail (322 of 328 falls). **Not applied** — it would leave 12 files, and the check is uninformative because timestamps carry only 3 significant digits (see §0.5 and REPORT). Waiting for a decision.
+- Rule 5 (|first→last timestamp span − N/20| > 10 % ⇒ drop, timestamps taken as ns): **900** of 912 remaining files fail (322 of 328 falls). **Skipped by decision**: it would leave 12 files, and the check is uninformative because timestamps carry only 3 significant digits (see §0.5). **Assumption: BITS is 20 Hz by sample order** (nominal rate from the dataset paper; not verifiable from the files). The BITS run is on hold.
 
 ## 6. Addenda after the BITS paper lookup
 
 Read by a sub-agent from https://pmc.ncbi.nlm.nih.gov/articles/PMC10709028/ (Nandi et al., Data in Brief 52 (2024) 109812); not independently re-verified:
-- 41 volunteers, **ages 20–47 (mean ≈ 27.9)**, 27 male / 14 female — i.e. **not geriatric** despite the folder name; wrist-worn device (Snapdragon 820c, MPU6500, MAX30102).
+- 41 volunteers, **ages 20–47 (mean ≈ 27.9)**, 27 male / 14 female — i.e. an adult cohort, **not geriatric** (the on-disk folder is still called `bits_geriatric`); wrist-worn device (Snapdragon 820c, MPU6500, MAX30102).
 - 16 ADLs and 8 falls, 5 repeats each; motion sensors 20 Hz, HR 1 Hz. The article's tag descriptions say `acc` = accelerometer and `acg` = *linear* accelerometer — **the opposite of what the data show** (`acg` carries gravity, rest ≈ 9.81 m/s²; `acc` rest ≈ 0.14 m/s²). The measurement is used, not the prose.
 - ADL list: 1 walking slowly, 2 walking quickly, 3 jogging, 4 jumping, 5 climbing up slowly, 6 climbing down slowly, 7 climbing up normally, 8 climbing down normally, 9 slowly sitting on chair, 10 rapidly sitting on chair, 11 nearly sitting and getting up, 12 swinging hands, 13 lying on bed, 14 lying on back and getting up slowly, 15 … normally, 16 sideways → back transition.
 - Fall list: 1 forward fall landing on knee, 2 right fall, 3 left fall, 4 forward fall, 5 seated on bed falling to ground, 6 forward fall, body weight on hand, 7 backward fall from seated, 8 grabbing while falling.
 - The article does not state the CSV naming. Each user has exactly 16 `adl` and 8 `fall` files (one per Sr No), and per-index motion energy follows the table (median std of |acg|: adl3 jogging 0.96 g and adl4 jumping 1.17 g highest; adl13 lying on bed 0.02 g lowest; seated falls 5 and 7 have the smallest peaks, 2.9 and 2.5 g). **Index → activity mapping is therefore inferred, consistent with the data, but undocumented.**
+
+## 7. Gyroscope (v3 feature set)
+
+Gyro is merged onto the **accelerometer's uniform grid** (then `resample_poly` to 26 Hz exactly like the accelerometer, so the two series are sample-aligned) and converted to **dps**. A segment is gyro-usable only if the gyro timestamps cover the accel segment to within 0.5 s with no gap > 1 s; otherwise it stays in the accelerometer-only analyses but is excluded from v3. The gyro series is never extrapolated, and BITS gyro parsing (`wrist_io.bits_gyro`) exists but is **unused**.
+
+| item | WEDA-FALL | SmartFallMM young (Meta_wrist) | SmartFallMM old (Meta_wrist) | BITS wrist IMU+HR (descriptive only) |
+|---|---|---|---|---|
+| file | `<code>/U<uid>_R<k>_gyro.csv` (same layout as accel) | `young/gyroscope/meta_wrist/S..A..T...csv` (epoch ms, ISO time, elapsed, x, y, z) | `old/gyroscope/meta_wrist/…csv` — **different format**: `YYYY-MM-DD HH:MM:SS.fff,x,y,z` (no epoch / elapsed); separate `meta_hip` folder exists | `gyro`-tagged block of the same CSV |
+| units | **rad/s** (inferred: walking median |ω| = 69 dps = 1.20 rad/s; the README does not say) → ×57.2958 to dps | **dps** (inferred from the ±125 range below) | dps | rad/s (inferred: max 35.3 rad/s = 2025 dps ≈ MPU6500 ±2000 dps) |
+| rate | effective 49.7 Hz ADL / 39.8 Hz falls (same burst-stamped, class-dependent artifact as the accelerometer) | median 50 Hz | median 50 Hz | n_gyro / n_acg median 1.00 |
+| sync with accelerometer | first/last timestamps agree to ≤ 0.03 s in 95 % of trials (max 0.48 s); both streams use the per-trial linear time axis → 969/969 usable | young: gyro timestamps within 0.5 s of the accel start *and* end in only 71 % of trials; the rule above gives falls 507/691, ADL 767/1049 usable segments | old: **cropped separately from the accel files** — usable ADL segments 188/777; clocks are assumed common (same device); cross-correlation of |ω| with accel dynamics is too weak (median peak 0.15–0.23) to verify | n/a |
+| wrist separated out? | n/a | yes (`meta_wrist` folder) | **yes**: a separate `meta_wrist` folder exists and differs from `meta_hip` in 497/497 paired trials (the README's 'Meta_hip_and_wrist' is two folders here) → old subjects are **kept** in v3 where synced | n/a |
+| saturation | max |component| 32.9 rad/s = 1885 dps (≈ ±2000 dps range); 11/969 trials hold their maximum value on ≥ 3 samples | **±125 dps per axis**: 97 % of trials peak at ≈125 dps (|ω| capped near 216 dps); 83 % of fall trials reach the cap; spurious outliers up to 391 dps | same ±125 dps cap (81 % of trials), outliers up to 532 dps | max 2025 dps, no repeated maxima |
+
+**Consequence for v3:** SmartFallMM's wrist gyro is a ±125 dps part and clips in almost every trial, while WEDA reaches ≈2000 dps. Pooled gyro features would therefore encode the dataset. v3 is evaluated on two populations (REPORT §): **WEDA-only, native range** (the realistic-sensor case) and **pooled, harmonised** (WEDA clipped to ±125 dps/axis before resampling, SmartFallMM natively clipped) as the cross-dataset check.
+
+### 7.1 Gyro full scale needed (firmware feasibility)
+
+Peak |ω| (vector norm, dps) over each trial; WEDA is the only dataset here whose sensor does not clip below the values of interest:
+
+| set | p50 | p75 | p90 | p95 | p99 | max | share > 250 dps | > 500 | > 1000 | > 1500 | > 2000 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| WEDA falls (350) | 727 | 981 | 1210 | 1422 | 1760 | 2008 | 100 % | 87 % | 23 % | 3 % | 0 % |
+| BITS falls (328, descriptive only) | 491 | 696 | 892 | 1031 | 1297 | 1393 | 91 % | 48 % | 6 % | 0 % | 0 % |
+| WEDA ADL (619) | 498 | – | – | 1065 | – | 1872 | | | | | |
+
+LSM6DS3TR-C gyro full-scale options are ±125 / 250 / 500 / 1000 / 2000 dps (datasheet fetch failed — see REPORT §Firmware feasibility; this list is from the part's published range and is **unverified here**).
 
