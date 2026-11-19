@@ -47,7 +47,7 @@ Board flat and still on the table. Log: `t_20261119-120142.log`
 | interval mean / σ / min / max | 18.390 / 0.808 / 9.999 / 20.013 ms (nominal 19.231 ms) |
 | per-second sample counts (60 s) | 54 ×37, 55 ×22 → spread 1 |
 | outside 19.231 ± 3 ms | 1 of 3263 (0.031 %) — the one 9.999 ms interval (likely a delayed detection of the preceding sample; not investigated) |
-| \|a\| mean / σ / min / max | 1.0455 / 0.0008 / 1.0420 / 1.0511 g |
+| \|a\| mean / σ / min / max | 1.0455 / 0.0008 / 1.0420 / 1.0511 g (a +46 mg Z-axis offset, not a scale error: see §6) |
 | overruns / I2C errors | 0 / 0 |
 | device resets | none |
 
