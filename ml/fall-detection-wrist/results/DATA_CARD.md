@@ -142,3 +142,104 @@ HR parsing (`wrist_io.parse_bits_hr`) is written but **not used**.
 
 Subject ids will be prefixed per dataset (`W`, `S`, `B`) so GroupKFold never merges different people.
 
+## 5. Exclusion log (Step 2 preprocessing)
+
+Rules (all fixed before any model was trained): SmartFallMM — ISO time string as clock; split at |gap| > 1 s; drop samples with non-increasing timestamps; drop segments < 2 s; fall trials keep only the segment containing the |a| peak; ADL files with median |a| outside 0.5–2 g are not in g and are dropped. WEDA — nothing excluded; per-trial linear time axis. BITS — `acg`, drop files whose rest |a| is not 1 ± 0.1 g.
+
+| dataset | action | class | count |
+|---|---|---|---|
+| SFMM | file dropped | adl | 32 |
+| SFMM | segment | adl | 56 |
+| SFMM | segment | fall | 7 |
+| SFMM | split | adl | 32 |
+| SFMM | split | fall | 6 |
+| SFMM | trial | fall | 1 |
+
+**SmartFallMM non-g files dropped (32):** S06A01T01, S06A02T01, S06A02T02, S06A02T03, S06A02T04, S06A02T05, S06A03T01, S06A03T02, S06A04T01, S06A04T02, S06A04T03, S06A04T04, S06A06T01, S06A06T02, S06A06T03, S06A06T04, S06A06T05, S06A07T01, S06A07T02, S06A07T03, S06A07T04, S06A07T05, S06A08T01, S06A08T02, S06A08T03, S06A08T04, S06A08T05, S30A09T01, S30A09T02, S30A09T03, S30A09T04, S30A09T05.
+
+**SmartFallMM segments dropped** (63):
+
+- S30A14T02.csv: fall: segment 1 does not contain the impact peak (dropped)
+- S31A11T01.csv: fall: segment 0 does not contain the impact peak (dropped)
+- S31A11T01.csv: segment 1 shorter than 2 s (1.80 s)
+- S31A11T02.csv: fall: segment 0 does not contain the impact peak (dropped)
+- S31A11T04.csv: fall: segment 0 does not contain the impact peak (dropped)
+- S32A11T02.csv: fall: segment 1 does not contain the impact peak (dropped)
+- S39A08T01.csv: segment 0 shorter than 2 s (1.72 s)
+- S39A10T03.csv: fall: segment 1 does not contain the impact peak (dropped)
+- S08A03T01.csv: segment 1 shorter than 2 s (1.46 s)
+- S13A02T01.csv: segment 3 shorter than 2 s (1.07 s)
+- S13A02T02.csv: segment 4 shorter than 2 s (1.07 s)
+- S13A02T03.csv: segment 1 shorter than 2 s (1.08 s)
+- S13A02T03.csv: segment 5 shorter than 2 s (1.07 s)
+- S13A02T04.csv: segment 4 shorter than 2 s (1.07 s)
+- S13A02T05.csv: segment 1 shorter than 2 s (1.34 s)
+- S13A02T05.csv: segment 4 shorter than 2 s (1.07 s)
+- S13A03T03.csv: segment 1 shorter than 2 s (1.07 s)
+- S13A03T04.csv: segment 2 shorter than 2 s (1.07 s)
+- S13A03T05.csv: segment 2 shorter than 2 s (1.07 s)
+- S13A04T01.csv: segment 1 shorter than 2 s (0.16 s)
+- S13A04T01.csv: segment 2 shorter than 2 s (1.34 s)
+- S13A04T01.csv: segment 5 shorter than 2 s (1.07 s)
+- S13A04T02.csv: segment 1 shorter than 2 s (0.88 s)
+- S13A04T02.csv: segment 2 shorter than 2 s (0.16 s)
+- S13A04T02.csv: segment 3 shorter than 2 s (1.34 s)
+- S13A04T02.csv: segment 6 shorter than 2 s (1.07 s)
+- S13A04T03.csv: segment 1 shorter than 2 s (0.66 s)
+- S13A04T03.csv: segment 4 shorter than 2 s (1.07 s)
+- S13A04T04.csv: segment 2 shorter than 2 s (0.66 s)
+- S13A04T04.csv: segment 5 shorter than 2 s (1.07 s)
+- S13A04T05.csv: segment 1 shorter than 2 s (0.32 s)
+- S13A04T05.csv: segment 4 shorter than 2 s (1.07 s)
+- S13A05T01.csv: segment 1 shorter than 2 s (0.18 s)
+- S13A05T01.csv: segment 4 shorter than 2 s (1.07 s)
+- S13A05T02.csv: segment 3 shorter than 2 s (1.07 s)
+- S13A05T03.csv: segment 1 shorter than 2 s (1.42 s)
+- S13A05T03.csv: segment 3 shorter than 2 s (1.07 s)
+- S13A05T04.csv: segment 1 shorter than 2 s (1.56 s)
+- S13A05T04.csv: segment 2 shorter than 2 s (1.42 s)
+- S13A05T04.csv: segment 4 shorter than 2 s (1.07 s)
+- S13A05T05.csv: segment 1 shorter than 2 s (0.54 s)
+- S13A05T05.csv: segment 2 shorter than 2 s (1.42 s)
+- S13A05T05.csv: segment 4 shorter than 2 s (1.07 s)
+- S13A06T03.csv: segment 1 shorter than 2 s (1.14 s)
+- S13A06T04.csv: segment 1 shorter than 2 s (0.32 s)
+- S13A06T04.csv: segment 2 shorter than 2 s (1.14 s)
+- S13A06T05.csv: segment 1 shorter than 2 s (1.18 s)
+- S13A06T05.csv: segment 2 shorter than 2 s (0.32 s)
+- S13A06T05.csv: segment 3 shorter than 2 s (1.14 s)
+- S13A07T01.csv: segment 2 shorter than 2 s (0.76 s)
+- S13A07T02.csv: segment 1 shorter than 2 s (0.50 s)
+- S13A07T02.csv: segment 2 shorter than 2 s (0.76 s)
+- S13A07T03.csv: segment 2 shorter than 2 s (0.20 s)
+- S13A07T03.csv: segment 3 shorter than 2 s (0.50 s)
+- S13A07T03.csv: segment 4 shorter than 2 s (0.76 s)
+- S13A07T04.csv: segment 2 shorter than 2 s (0.20 s)
+- S13A07T04.csv: segment 3 shorter than 2 s (0.50 s)
+- S13A07T04.csv: segment 4 shorter than 2 s (0.76 s)
+- S13A07T05.csv: segment 1 shorter than 2 s (0.42 s)
+- S13A07T05.csv: segment 2 shorter than 2 s (0.20 s)
+- S13A07T05.csv: segment 3 shorter than 2 s (0.50 s)
+- S13A07T05.csv: segment 4 shorter than 2 s (0.76 s)
+- S21A07T04.csv: segment 0 shorter than 2 s (1.04 s)
+
+**SmartFallMM fall trials lost entirely:** 1: S31A11T01.csv.
+
+**SmartFallMM files split at gaps > 1 s (38):** S30A14T02 (2 segments); S31A11T01 (2 segments); S31A11T02 (2 segments); S31A11T04 (2 segments); S32A11T02 (2 segments); S39A08T01 (2 segments); S39A10T03 (2 segments); S08A03T01 (2 segments); S13A02T01 (4 segments); S13A02T02 (5 segments); S13A02T03 (6 segments); S13A02T04 (5 segments); S13A02T05 (5 segments); S13A03T01 (2 segments); S13A03T02 (3 segments); S13A03T03 (2 segments); S13A03T04 (3 segments); S13A03T05 (3 segments); S13A04T01 (6 segments); S13A04T02 (7 segments); S13A04T03 (5 segments); S13A04T04 (6 segments); S13A04T05 (5 segments); S13A05T01 (5 segments); S13A05T02 (4 segments); S13A05T03 (4 segments); S13A05T04 (5 segments); S13A05T05 (5 segments); S13A06T01 (3 segments); S13A06T03 (2 segments); S13A06T04 (3 segments); S13A06T05 (4 segments); S13A07T01 (5 segments); S13A07T02 (5 segments); S13A07T03 (7 segments); S13A07T04 (7 segments); S13A07T05 (7 segments); S13A08T05 (2 segments).
+
+**SmartFallMM segments with non-increasing-timestamp samples removed (0):** .
+
+### BITS selection counts (pre-specified rules)
+
+- Rule 4 (rest |a| of `acg` within 1 ± 0.1 g): **72** of 984 files fail (0 falls, 72 ADL); 912 remain (328 falls, 584 ADL). Failing files: B_adl12_u01, B_adl12_u07, B_adl12_u08, B_adl12_u09, B_adl12_u17, B_adl12_u21, B_adl12_u28, B_adl12_u33, B_adl12_u34, B_adl2_u03, B_adl2_u12, B_adl2_u16, B_adl2_u17, B_adl2_u22, B_adl2_u32, B_adl3_u01, B_adl3_u06, B_adl3_u07, B_adl3_u08, B_adl3_u11, B_adl3_u12, B_adl3_u13, B_adl3_u15, B_adl3_u16, B_adl3_u18, B_adl3_u19, B_adl3_u20, B_adl3_u22, B_adl3_u24, B_adl3_u27, B_adl3_u30, B_adl3_u33, B_adl3_u35, B_adl3_u37, B_adl3_u38, B_adl4_u01, B_adl4_u04, B_adl4_u08, B_adl4_u09, B_adl4_u12, B_adl4_u13, B_adl4_u18, B_adl4_u19, B_adl4_u20, B_adl4_u22, B_adl4_u23, B_adl4_u25, B_adl4_u32, B_adl4_u36, B_adl4_u37, B_adl4_u38, B_adl4_u41, B_adl7_u01, B_adl7_u07, B_adl7_u08, B_adl7_u09, B_adl7_u17, B_adl7_u19, B_adl7_u24, B_adl8_u01, B_adl8_u04, B_adl8_u07, B_adl8_u12, B_adl8_u13, B_adl8_u16, B_adl8_u22, B_adl8_u23, B_adl8_u24, B_adl8_u28, B_adl8_u32, B_adl8_u37, B_adl8_u40.
+- Rule 5 (|first→last timestamp span − N/20| > 10 % ⇒ drop, timestamps taken as ns): **900** of 912 remaining files fail (322 of 328 falls). **Not applied** — it would leave 12 files, and the check is uninformative because timestamps carry only 3 significant digits (see §0.5 and REPORT). Waiting for a decision.
+
+## 6. Addenda after the BITS paper lookup
+
+Read by a sub-agent from https://pmc.ncbi.nlm.nih.gov/articles/PMC10709028/ (Nandi et al., Data in Brief 52 (2024) 109812); not independently re-verified:
+- 41 volunteers, **ages 20–47 (mean ≈ 27.9)**, 27 male / 14 female — i.e. **not geriatric** despite the folder name; wrist-worn device (Snapdragon 820c, MPU6500, MAX30102).
+- 16 ADLs and 8 falls, 5 repeats each; motion sensors 20 Hz, HR 1 Hz. The article's tag descriptions say `acc` = accelerometer and `acg` = *linear* accelerometer — **the opposite of what the data show** (`acg` carries gravity, rest ≈ 9.81 m/s²; `acc` rest ≈ 0.14 m/s²). The measurement is used, not the prose.
+- ADL list: 1 walking slowly, 2 walking quickly, 3 jogging, 4 jumping, 5 climbing up slowly, 6 climbing down slowly, 7 climbing up normally, 8 climbing down normally, 9 slowly sitting on chair, 10 rapidly sitting on chair, 11 nearly sitting and getting up, 12 swinging hands, 13 lying on bed, 14 lying on back and getting up slowly, 15 … normally, 16 sideways → back transition.
+- Fall list: 1 forward fall landing on knee, 2 right fall, 3 left fall, 4 forward fall, 5 seated on bed falling to ground, 6 forward fall, body weight on hand, 7 backward fall from seated, 8 grabbing while falling.
+- The article does not state the CSV naming. Each user has exactly 16 `adl` and 8 `fall` files (one per Sr No), and per-index motion energy follows the table (median std of |acg|: adl3 jogging 0.96 g and adl4 jumping 1.17 g highest; adl13 lying on bed 0.02 g lowest; seated falls 5 and 7 have the smallest peaks, 2.9 and 2.5 g). **Index → activity mapping is therefore inferred, consistent with the data, but undocumented.**
+
