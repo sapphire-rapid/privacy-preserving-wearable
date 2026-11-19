@@ -1,0 +1,12 @@
+constant-gravity edge test OK
+sine time-scale test OK
+rest |a| weda  @26 Hz: median 1.0001 g  [5-95%: 0.983, 1.016]  (969 trials)
+rest |a| weda  @52 Hz: median 1.0004 g  [5-95%: 0.983, 1.017]  (969 trials)
+rest |a| sfmm  @26 Hz: median 1.0027 g  [5-95%: 0.958, 1.066]  (2517 trials)
+rest |a| sfmm  @52 Hz: median 1.0029 g  [5-95%: 0.959, 1.069]  (2517 trials)
+rest |a| bits  @26 Hz: median 1.0006 g  [5-95%: 0.930, 1.049]  (983 trials)
+rest |a| bits  @52 Hz: median 1.0006 g  [5-95%: 0.931, 1.053]  (983 trials)
+ALL TESTS PASSED
+fs=26  windows=2000  max rel diff per feature: [0. 0. 0. 0. 0. 0. 0. 0. 0.]
+fs=52  windows=2000  max rel diff per feature: [0. 0. 0. 0. 0. 0. 0. 0. 0.]
+TEST FEATURES PASSED
