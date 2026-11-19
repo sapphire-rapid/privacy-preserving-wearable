@@ -42,3 +42,8 @@ firmware/fall_imu/host/host_test
 *.bak*
 logs/
 firmware/*/data/
+
+# wrist-retrain
+ml/fall-detection-wrist/.venv/
+!ml/fall-detection-wrist/results/*.csv
+ml/fall-detection-wrist/results/data_card_stats.json
