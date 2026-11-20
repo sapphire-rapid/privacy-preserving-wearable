@@ -1,8 +1,8 @@
-"""Step 5b: ONE-SHOT held-out evaluation of the final LR@26 on BITS (`acg`, 20 -> 26 Hz).  NOT RUN YET.
+"""Step 5b: ONE-SHOT held-out evaluation of the final LR@26 on BITS wrist IMU+HR (ages 20-47) (`acg`, 20 -> 26 Hz).
 
   .venv/bin/python -I src/eval_bits.py --op trig --rule5 skip --i-understand-this-is-the-single-run
 Options (decided BEFORE looking at any BITS result, see REPORT.md §0):
-  --op {spec,ext,trig}  operating point from results/final_model.json (or --thr/--std)
+  --op {...,trig90}  operating point from results/final_model.json (or --thr/--std); the chosen one is trig90 (thr 0.835)
   --rule5 {literal,skip}  literal = drop files with |timestamp span - N/20| > 10 % (leaves ~12 files), skip = do not apply it
 A lock file results/bits_run.lock makes a second run impossible (delete it only if the first run crashed before writing results).
 --selftest runs the same code path on WEDA-FALL pool data (no lock, nothing written to BITS outputs) to validate the plumbing.
@@ -32,7 +32,7 @@ FALL_NAMES = {"fall1": "forward fall landing on knee", "fall2": "right fall", "f
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--op", default="trig", choices=["spec", "ext", "trig"])
+    ap.add_argument("--op", default="trig", choices=["spec", "ext", "trig", "trig80", "trig85", "trig90", "trig95"])
     ap.add_argument("--thr", type=float); ap.add_argument("--std", type=float)
     ap.add_argument("--rule5", default="skip", choices=["literal", "skip"])
     ap.add_argument("--selftest", action="store_true")
