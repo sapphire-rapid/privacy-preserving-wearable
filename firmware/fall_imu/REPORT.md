@@ -4,21 +4,21 @@ Board: bare Seeed XIAO nRF52840 Sense on USB (LSM6DS3TR-C, internal I2C bus).
 Branch `fall-imu-onboard`. Firmware under test: commit `10368b0`
 (`INFO build=10368b0`), RIOT `fac711a2b4` (untouched), toolchain
 arm-none-eabi-gcc 15.2.0. Every number below is a measured value; the log it came
-from is given in brackets. Logs live in `firmware/fall_imu/logs/` (gitignored, so
-the file names are the provenance).
+from is given in brackets. The cited logs are tracked copies in
+`firmware/fall_imu/results/logs/` (the live capture directory `logs/` is gitignored).
 
 ## 0. Build, flash, RAM
 
 | item | value | source |
 |---|---|---|
 | text / data / bss (arm-none-eabi-size) | 57688 / 160 / 24432 B (dec 82280) | build output of `10368b0` |
-| flash ≈ text+data | 57848 B (linker symbols, `i`) | `i_20261119-120010.log` |
+| flash ≈ text+data | 57848 B (linker symbols, `i`) | `results/logs/i_20261119-120010.log` |
 | `printf_float` (newlib-nano) | needed for `%f`/`%g`; part of the above | Makefile |
-| first flash (`8b2baa6`) | IMU did not answer: `imu_init_rc=-1`, all register reads failed | `i_20261119-115103.log` |
+| first flash (`8b2baa6`) | IMU did not answer: `imu_init_rc=-1`, all register reads failed | `results/logs/i_20261119-115103.log` |
 | cause | `imu.c` used the generic driver defaults I2C_DEV(0)/0x6B (empty header bus); this board's IMU is I2C_DEV(1)/0x6A (`board.h`), power P1.08 set by `board.c`. The old Step 3a `main.c` had the same two constants, so it could never have run on this board. | board.h |
 | fix | `10368b0`: use `LSM6DSXX_PARAM_I2C/_ADDR` from `board.h` | git |
 
-Registers read back on the working firmware (`i_20261119-120010.log`):
+Registers read back on the working firmware (`results/logs/i_20261119-120010.log`):
 
 | register | value | decoded |
 |---|---|---|
@@ -37,7 +37,7 @@ fill in the bandwidth.
 
 ## 1. Step 3a — 60 s timing (`t`)
 
-Board flat and still on the table. Log: `t_20261119-120142.log`
+Board flat and still on the table. Log: `results/logs/t_20261119-120142.log`
 (EVENT lines `start/end flat_still_on_table`).
 
 | quantity | measured |
@@ -77,8 +77,8 @@ burst read, timestamp at detection); the poll bounds the interval jitter to abou
 
 ## 2. Step 3b — on-device features + LR (`s`)
 
-Log: `s_20261119-121626.log` (firmware `10368b0`; an earlier run on `8b2baa6`,
-`s_20261119-115132.log`, gave the same results).
+Log: `results/logs/s_20261119-121626.log` (firmware `10368b0`; an earlier run on `8b2baa6`,
+`results/logs/s_20261119-115132.log`, gave the same results).
 
 * **12/12 windows and 6/6 stillness segments PASS.** Features within 1e-4 relative
   required; worst per feature: max_mag 1.03e-07, min_mag 9.66e-08, mean_mag 4.20e-07,
@@ -96,7 +96,7 @@ Log: `s_20261119-121626.log` (firmware `10368b0`; an earlier run on `8b2baa6`,
 
 ## 3. Step 3b' — replay through the live path (`r`)
 
-Log: `r_20261119-121627.log`. 18 sequences, each through a freshly reset
+Log: `results/logs/r_20261119-121627.log`. 18 sequences, each through a freshly reset
 `fall_pipe_t` (the same ring → stride → features → LR → trigger → confirm code as
 live mode), paced at 52 Hz (19230 µs), total 72129 ms. Predicted beforehand by
 `host/host_pipe_test` (identical table).
@@ -142,12 +142,12 @@ detection; mg are the driver's counts×16000/32767 at ±16 g). `host/record.py` 
 `t_us`, counts drops against the run's own median interval, and writes
 `data/own/<subject>_<activity>_<trial>.csv` (gitignored).
 
-**Run 1 — 120 s (`rawlog_20261119-122224.log`, `data/own/S01_still_1.csv`).** Intended as
+**Run 1 — 120 s (`results/logs/rawlog_20261119-122224.log`, `data/own/S01_still_1.csv`).** Intended as
 60 s still + 60 s wave, but the board did not move at all (|a| σ 0.0008 g in both
 "phases", axis σ < 1 mg): it is a valid 120 s *still* recording, not a wave test.
 6514 samples, 0 dropped, 0 overruns, 0 I2C errors, 0 resets, rate 54.354 Hz.
 
-**Run 2 — 130 s, still then wave (`rawlog_20261119-122732.log`,
+**Run 2 — 130 s, still then wave (`results/logs/rawlog_20261119-122732.log`,
 `data/own/S01_still-wave_2.csv`).** Phases found from the data (|a| σ over 1 s windows):
 still 0–~57 s (|a| σ 0.0007 g, 1.0451–1.0455 g), sustained gentle motion from ~57 s to the
 end (|a| 0.32–3.27 g, 5 s σ up to 0.31 g; the 3.27 g peak is in the last 5 s, presumably
@@ -247,7 +247,7 @@ Findings and caveats:
 
 Firmware: wrist LR @ 26 Hz (`include/fall_model.h` / `test_windows.h` from `ml/fall-detection-wrist/`, threshold
 0.835, 9 features, window 52 / stride 13 / confirm 78). Board: the same bare XIAO nRF52840 Sense. Branch
-`wrist-retrain`. Logs are in `firmware/fall_imu/logs/` (gitignored, so the file names are the provenance); every
+`wrist-retrain`. Logs are tracked in `firmware/fall_imu/results/logs/` (copies of the cited captures from the gitignored `logs/`); every
 run went through `host/serial_log.py`, EVENT lines were stamped by the host at the moment of each cue.
 All numbers below are measured values.
 
@@ -255,14 +255,14 @@ All numbers below are measured values.
 
 | item | value | source |
 |---|---|---|
-| sources | commit `3b3ecc3` (log-only changes below); board reports `build=1703861`, the next commit, which only added `host/analyze_live.py` | `i_20261120-112845.log` |
+| sources | commit `3b3ecc3` (log-only changes below); board reports `build=1703861`, the next commit, which only added `host/analyze_live.py` | `results/logs/i_20261120-112845.log` |
 | build | `UF2_SOFTDEV=DROP make`, no warnings; link address 0x1000 | build output |
 | text / data / bss (`arm-none-eabi-size`) | 48584 / 160 / 20064 B | build output |
-| runtime linker symbols (`i`) | text 48584, data 160, bss 19552, flash ≈ 48744 B (old 52 Hz image: 57848 B) | `i_20261120-112845.log` |
+| runtime linker symbols (`i`) | text 48584, data 160, bss 19552, flash ≈ 48744 B (old 52 Hz image: 57848 B) | `results/logs/i_20261120-112845.log` |
 | flash procedure | double-tap → `XIAO-SENSE` drive (bootloader: "SoftDevice: not found"); `UF2_SOFTDEV=DROP make flash`: 97792 B written at 0x1000; flashed **once** | make output |
 | log-only code changes for this validation | (1) `EVT TRIGGER_FEAT` prints the 9 window features on every live TRIGGER; (2) `i` flags the long-lie parameters as placeholders and prints the threshold with 4 decimals; (3) `s`/`r`/`l` banners print the threshold with 3 decimals (it printed 0.835 as 0.83). No pipeline, feature or model change. | git `3b3ecc3` |
 
-### 8.2 `i` — PASS (`i_20261120-112845.log`)
+### 8.2 `i` — PASS (`results/logs/i_20261120-112845.log`)
 
 | check | measured |
 |---|---|
@@ -273,7 +273,7 @@ All numbers below are measured values.
 | threshold | `FALL_PROB_THR=0.8350` |
 | long-lie params | printed as "PLACEHOLDERS (not validated, not part of fall detection)": std 0.08, tol 0.2, 78 samples |
 
-### 8.3 `t` — 60 s timing, board flat and still — PASS (`t_20261120-113244.log`, EVENT `start/end flat_still_on_table`)
+### 8.3 `t` — 60 s timing, board flat and still — PASS (`results/logs/t_20261120-113244.log`, EVENT `start/end flat_still_on_table`)
 
 | quantity | measured |
 |---|---|
@@ -292,7 +292,7 @@ measured): at 27.176 Hz a 52-sample window spans 1.913 s (not 2.00 s), the 78-sa
 (not 3.00 s) and the 26-sample `std_mag_post` window 0.957 s; whether this time-scale shift matters at 26 Hz was
 not tested.
 
-### 8.4 `s` — self-test — PASS (`s_20261120-112855.log`)
+### 8.4 `s` — self-test — PASS (`results/logs/s_20261120-112855.log`)
 
 * 12/12 windows PASS and 6/6 stillness segments PASS; every trigger / still decision equals the expected one.
 * Worst relative feature error vs the Python expectation (tolerance 1e-4): max_mag 8.4e-08, min_mag 1.0e-07,
@@ -301,11 +301,11 @@ not tested.
 * Time per window over 100 runs (`ztimer_usec`): features + LR **mean 385.3 µs / max 417 µs**; features alone
   181.1 / 213 µs; LR alone 204.2 / 236 µs (stride at 26 Hz = 500 ms, so ≈ 0.08 % duty).
 
-### 8.5 `r` — replay through the live path — PASS (`r_20261120-112904.log`)
+### 8.5 `r` — replay through the live path — PASS (`results/logs/r_20261120-112904.log`)
 
 18/18 sequences PASS (period 38461 µs, elapsed 72.1 s): fall+still ×6 → CONFIRMED, fall+moving ×6 → CANCELLED,
 ADL ×6 → no trigger. Host reference: `host_pipe_test` built from the same `pipeline.c` and headers
-(`logs/host_pipe_sim_26hz.txt`, 18/18 PASS). **Row-by-row comparison of kind, source, length, windows, triggers,
+(`results/logs/host_pipe_sim_26hz.txt`, 18/18 PASS). **Row-by-row comparison of kind, source, length, windows, triggers,
 confirmed, cancelled, pending, w0 probability (±1e-6), expectation and result: 0 mismatches in 18 rows.**
 
 ### 8.6 `l` — live smoke test, no tuning
@@ -317,10 +317,10 @@ prompt). `host/analyze_live.py` and the numbers below come from the LIVE lines (
 
 | phase (EVENT) | log | duration | stride windows | triggers (p ≥ 0.835) | confirmed / cancelled | p min / p25 / median / p75 / p95 / max | windows with max \|a\| > 2 g | > 3.46 g | max \|a\| median / p95 / max (g) |
 |---|---|---|---|---|---|---|---|---|---|
-| still on table | `l_20261120-113959.log` | 60 s | 125 | **0** | 0 / 0 | 0.0026 / 0.0027 / 0.0027 / 0.0027 / 0.0027 / 0.0027 | 0 (0.0 %) | 0 | 1.05 / 1.05 / 1.05 |
-| held in hand, typing / waving gently | `l_20261120-114139.log` | 60 s | 125 | **0** | 0 / 0 | 0.0027 / 0.0029 / 0.0031 / 0.0038 / 0.0060 / 0.0097 | 0 (0.0 %) | 0 | 1.06 / 1.19 / 1.22 |
-| claps, holding the board | `l_20261120-114315.log` | 40 s | 84 | **12** | 0 / 12 | 0.0031 / 0.0061 / 0.0629 / 0.4824 / 0.9866 / 0.9949 | 41 (48.8 %) | 0 | 1.84 / 3.21 / 3.38 |
-| 5 × fall gesture (swing, set flat, 5 s still) | `l_20261120-114646.log` | 110 s | 230 | **16** | **5** / 0 | 0.0026 / 0.0027 / 0.0027 / 0.0031 / 0.9730 / 1.0000 | 22 (9.6 %) | 16 (7.0 %) | 1.05 / 3.81 / 6.39 |
+| still on table | `results/logs/l_20261120-113959.log` | 60 s | 125 | **0** | 0 / 0 | 0.0026 / 0.0027 / 0.0027 / 0.0027 / 0.0027 / 0.0027 | 0 (0.0 %) | 0 | 1.05 / 1.05 / 1.05 |
+| held in hand, typing / waving gently | `results/logs/l_20261120-114139.log` | 60 s | 125 | **0** | 0 / 0 | 0.0027 / 0.0029 / 0.0031 / 0.0038 / 0.0060 / 0.0097 | 0 (0.0 %) | 0 | 1.06 / 1.19 / 1.22 |
+| claps, holding the board | `results/logs/l_20261120-114315.log` | 40 s | 84 | **12** | 0 / 12 | 0.0031 / 0.0061 / 0.0629 / 0.4824 / 0.9866 / 0.9949 | 41 (48.8 %) | 0 | 1.84 / 3.21 / 3.38 |
+| 5 × fall gesture (swing, set flat, 5 s still) | `results/logs/l_20261120-114646.log` | 110 s | 230 | **16** | **5** / 0 | 0.0026 / 0.0027 / 0.0027 / 0.0031 / 0.9730 / 1.0000 | 22 (9.6 %) | 16 (7.0 %) | 1.05 / 3.81 / 6.39 |
 
 Triggers vs EVENT lines:
 

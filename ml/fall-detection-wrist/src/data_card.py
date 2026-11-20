@@ -145,7 +145,7 @@ def main():
         cls[(r["lp_acc"] > 6, r["lp_acg"] > 6)] += 1
 
     A("# DATA CARD — wrist datasets (Step 1)\n")
-    A("Every figure is **measured from the raw files** by `src/data_card.py` (per-trial dump: `results/data_card_stats.json`). "
+    A("Every figure is **measured from the raw files** by `src/data_card.py` (the script also writes a per-trial dump `results/data_card_stats.json`; it is not committed because it contains local file paths — regenerate it by running the script). "
       "Raw data stay outside the repo (`~/datasets/wrist`, read-only). *Rest check* = mean |a| over the 1-s window with the smallest std in each trial; tables give median [5th, 95th percentile] over trials.\n")
 
     A("## 0. Things that look off — decisions needed before Step 2\n")

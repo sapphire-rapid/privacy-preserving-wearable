@@ -1,6 +1,6 @@
 # DATA CARD — wrist datasets (Step 1)
 
-Every figure is **measured from the raw files** by `src/data_card.py` (per-trial dump: `results/data_card_stats.json`). Raw data stay outside the repo (`~/datasets/wrist`, read-only). *Rest check* = mean |a| over the 1-s window with the smallest std in each trial; tables give median [5th, 95th percentile] over trials.
+Every figure is **measured from the raw files** by `src/data_card.py` (the script also writes a per-trial dump `results/data_card_stats.json`; it is not committed because it contains local file paths — regenerate it by running the script). Raw data stay outside the repo (`~/datasets/wrist`, read-only). *Rest check* = mean |a| over the 1-s window with the smallest std in each trial; tables give median [5th, 95th percentile] over trials.
 
 ## 0. Things that look off — decisions needed before Step 2
 

@@ -47,3 +47,7 @@ firmware/*/data/
 ml/fall-detection-wrist/.venv/
 !ml/fall-detection-wrist/results/*.csv
 ml/fall-detection-wrist/results/data_card_stats.json
+
+# tracked copies of the log files cited in firmware/fall_imu/REPORT.md
+!firmware/fall_imu/results/logs/
+!firmware/fall_imu/results/logs/*
