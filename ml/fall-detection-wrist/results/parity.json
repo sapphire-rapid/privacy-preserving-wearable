@@ -1,11 +1,11 @@
 {
  "firmware_fall_features_sha": "9ec8875932bda914",
  "op": {
-  "op_mode": "trig",
-  "thr": 0.671,
+  "op_mode": "trig90",
+  "thr": 0.835,
   "std": 0.08,
   "mean_tol": 0.2,
-  "provisional": true
+  "provisional": false
  },
  "host_test_compile": {
   "rc": 0,
@@ -67,8 +67,8 @@
   },
   "max_abs_prob_diff": 3.7688492404708285e-07,
   "trigger_mismatch_at_exported_thr": 0,
-  "n_trigger_py": 249,
-  "n_near_thr": 0,
+  "n_trigger_py": 203,
+  "n_near_thr": 1,
   "extra_thresholds": {
    "0.003": {
     "mismatch": 0,

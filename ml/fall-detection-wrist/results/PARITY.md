@@ -1,6 +1,6 @@
 # C parity (Step 6)
 
-Firmware `fall_features.h` sha256[:16] `9ec8875932bda914` (copied unmodified to a build dir; firmware include dir untouched). Exported operating point: mode `trig`, thr 0.671, std 0.08, tol 0.2 (provisional=True).
+Firmware `fall_features.h` sha256[:16] `9ec8875932bda914` (copied unmodified to a build dir; firmware include dir untouched). Exported operating point: mode `trig90`, thr 0.835, std 0.08, tol 0.2 (provisional=False).
 
 - `host_test.c` built with gcc against the new headers: compile rc=0; run rc=0; last lines:
 
@@ -26,7 +26,7 @@ RESULT: ALL PASS (12 windows, 6 still segments)
 | tilt_deg | 6.98e-05 | 2.50e-05 | 0 |
 
 - probability: max |C − Python| = 3.77e-07
-- trigger decisions at the exported threshold 0.671: **0 mismatches** of 1000 (249 triggers; 0 windows within 1e-4 of the threshold)
+- trigger decisions at the exported threshold 0.835: **0 mismatches** of 1000 (203 triggers; 1 windows within 1e-4 of the threshold)
 - same comparison at other thresholds: 0.003: 0 mismatches (980 triggers); 0.5: 0 mismatches (292 triggers); 0.671: 0 mismatches (249 triggers); 0.93: 0 mismatches (164 triggers)
 - stillness decisions on 1000 random 3 s segments (std<0.08, |mean−1|<0.2): **0 mismatches** (131 still)
 
