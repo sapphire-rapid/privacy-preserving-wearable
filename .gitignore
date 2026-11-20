@@ -51,3 +51,6 @@ ml/fall-detection-wrist/results/data_card_stats.json
 # tracked copies of the log files cited in firmware/fall_imu/REPORT.md
 !firmware/fall_imu/results/logs/
 !firmware/fall_imu/results/logs/*
+# tracked six-position calibration recordings cited in firmware/fall_imu/REPORT.md section 6
+!firmware/fall_imu/results/calibration/
+!firmware/fall_imu/results/calibration/*

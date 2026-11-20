@@ -187,12 +187,12 @@ with Y up. The rejected capture was deleted.)
 
 | orientation | file | n | mean x / y / z (mg) | σ max (mg) | \|a\| before (g) | \|a\| after (g) |
 |---|---|---|---|---|---|---|
-| xp | `S01_cal-xp_1.csv` | 435 | 1030.0 / 20.8 / 96.4 | 1.53 | 1.0347 | 1.0017 |
-| xn | `S01_cal-xn_1.csv` | 435 | -987.0 / -45.0 / 27.4 | 0.91 | 0.9884 | 1.0008 |
-| yp | `S01_cal-yp_1.csv` | 434 | 14.2 / 990.3 / 42.5 | 0.90 | 0.9913 | 1.0000 |
-| yn | `S01_cal-yn_1.csv` | 434 | 22.3 / -1008.4 / 0.4 | 2.82 | 1.0087 | 1.0010 |
-| zp | `S01_cal-zp_1.csv` | 435 | 2.1 / -11.6 / 1046.0 | 0.85 | 1.0461 | 1.0002 |
-| zn | `S01_cal-zn_1.csv` | 435 | -117.5 / -11.3 / -953.7 | 0.93 | 0.9609 | 1.0095 |
+| xp | `results/calibration/S01_cal-xp_1.csv` | 435 | 1030.0 / 20.8 / 96.4 | 1.53 | 1.0347 | 1.0017 |
+| xn | `results/calibration/S01_cal-xn_1.csv` | 435 | -987.0 / -45.0 / 27.4 | 0.91 | 0.9884 | 1.0008 |
+| yp | `results/calibration/S01_cal-yp_1.csv` | 434 | 14.2 / 990.3 / 42.5 | 0.90 | 0.9913 | 1.0000 |
+| yn | `results/calibration/S01_cal-yn_1.csv` | 434 | 22.3 / -1008.4 / 0.4 | 2.82 | 1.0087 | 1.0010 |
+| zp | `results/calibration/S01_cal-zp_1.csv` | 435 | 2.1 / -11.6 / 1046.0 | 0.85 | 1.0461 | 1.0002 |
+| zn | `results/calibration/S01_cal-zn_1.csv` | 435 | -117.5 / -11.3 / -953.7 | 0.93 | 0.9609 | 1.0095 |
 
 Model: `calibrated_mg = (raw_mg - offset) / scale` per axis, offset = (raw(+1 g) + raw(−1 g))/2,
 scale = (raw(+1 g) − raw(−1 g))/2000.
