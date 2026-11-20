@@ -234,7 +234,7 @@ Findings and caveats:
 * ODR tolerance of the part not cited from the datasheet; measured 54.38 Hz (+4.57 %)
   on this unit only. Other units may differ; a retrained model should be rate-tested on
   the target unit (or timestamps used to resample to a fixed rate).
-* `l` (live) not exercised on hardware (by decision, waiting for the retrained model).
+* `l` (live) was not exercised for the 52 Hz model; it was exercised for the 26 Hz wrist model, see section 8.
 * First-sample stale artifact in `w`/`t`/`l` (section 5): `imu_start()` should discard
   one sample.
 * `ml/fall-detection/src/export_final.py` does not emit the new `TILT_PRE/POST_SAMPLES`,
@@ -242,3 +242,131 @@ Findings and caveats:
   keep those four lines (a hand-merge) until the exporter is updated.
 * The old `firmware/fall_imu` Step-3a `main.c` was replaced; its comment/constants
   (`I2C_DEV(0)`, 0x6B) were wrong for this board.
+
+## 8. 26 Hz wrist model, on-board
+
+Firmware: wrist LR @ 26 Hz (`include/fall_model.h` / `test_windows.h` from `ml/fall-detection-wrist/`, threshold
+0.835, 9 features, window 52 / stride 13 / confirm 78). Board: the same bare XIAO nRF52840 Sense. Branch
+`wrist-retrain`. Logs are in `firmware/fall_imu/logs/` (gitignored, so the file names are the provenance); every
+run went through `host/serial_log.py`, EVENT lines were stamped by the host at the moment of each cue.
+All numbers below are measured values.
+
+### 8.1 Build and flash
+
+| item | value | source |
+|---|---|---|
+| sources | commit `3b3ecc3` (log-only changes below); board reports `build=1703861`, the next commit, which only added `host/analyze_live.py` | `i_20261120-112845.log` |
+| build | `UF2_SOFTDEV=DROP make`, no warnings; link address 0x1000 | build output |
+| text / data / bss (`arm-none-eabi-size`) | 48584 / 160 / 20064 B | build output |
+| runtime linker symbols (`i`) | text 48584, data 160, bss 19552, flash ≈ 48744 B (old 52 Hz image: 57848 B) | `i_20261120-112845.log` |
+| flash procedure | double-tap → `XIAO-SENSE` drive (bootloader: "SoftDevice: not found"); `UF2_SOFTDEV=DROP make flash`: 97792 B written at 0x1000; flashed **once** | make output |
+| log-only code changes for this validation | (1) `EVT TRIGGER_FEAT` prints the 9 window features on every live TRIGGER; (2) `i` flags the long-lie parameters as placeholders and prints the threshold with 4 decimals; (3) `s`/`r`/`l` banners print the threshold with 3 decimals (it printed 0.835 as 0.83). No pipeline, feature or model change. | git `3b3ecc3` |
+
+### 8.2 `i` — PASS (`i_20261120-112845.log`)
+
+| check | measured |
+|---|---|
+| WHO_AM_I | 0x6A (I2C_DEV(1), 0x6A), `imu_init_rc=0` |
+| `CTRL1_XL` (0x10) | **0x24** = ODR_XL 0x2 (**26 Hz**), FS_XL 0x1 (**±16 g**), LPF1_BW_SEL 0, BW0_XL 0 |
+| `CTRL8_XL`, `CTRL2_G`, `CTRL3_C` | 0x00 (LPF2 off, no HP), 0x30 (gyro still 52 Hz, unused), 0x44 (BDU, IF_INC) |
+| model macros | SAMPLE_RATE_HZ 26, WIN 52, STRIDE 13, CONFIRM 78, TILT_PRE/POST 13, TILT_FALLBACK 5, POST_STD 26, N_FEATURES 9 |
+| threshold | `FALL_PROB_THR=0.8350` |
+| long-lie params | printed as "PLACEHOLDERS (not validated, not part of fall detection)": std 0.08, tol 0.2, 78 samples |
+
+### 8.3 `t` — 60 s timing, board flat and still — PASS (`t_20261120-113244.log`, EVENT `start/end flat_still_on_table`)
+
+| quantity | measured |
+|---|---|
+| timing target | `target_dt_ms=38.462` = 1000 / `SAMPLE_RATE_HZ` (derived from the model macro in `modes.c`, not the old 52 Hz constant); `odr_hz=26` |
+| samples in 60.016 s | 1632 (nominal 26 Hz would give 1560: +4.6 %) |
+| **real ODR** (n−1)/elapsed | **27.176 Hz (+4.52 % vs 26 Hz)**; host clock 27.135 Hz, `up_ms` 27.133 Hz (three clocks agree) |
+| per-second sample counts (60 s) | 27 ×49, 28 ×10 → spread 1 |
+| interval mean / σ / min / max | 36.797 / 0.995 / 30.002 / 38.015 ms (nominal 38.462 ms) |
+| outside 38.462 ± 3 ms | 1 of 1631 (0.061 %), the 30.002 ms interval |
+| \|a\| mean / σ / min / max | 1.0463 / 0.0005 / 1.0440 / 1.0490 g |
+| overruns / I2C errors / resets | 0 / 0 / none |
+
+PASS criteria (stable per-second counts within ±1, 0 overruns, 0 I2C errors, real ODR recorded) all met. The
+oscillator ratio is the same as on the 52 Hz setting (+4.57 % then, +4.52 % now). Derived (arithmetic, not
+measured): at 27.176 Hz a 52-sample window spans 1.913 s (not 2.00 s), the 78-sample confirm segment 2.870 s
+(not 3.00 s) and the 26-sample `std_mag_post` window 0.957 s; whether this time-scale shift matters at 26 Hz was
+not tested.
+
+### 8.4 `s` — self-test — PASS (`s_20261120-112855.log`)
+
+* 12/12 windows PASS and 6/6 stillness segments PASS; every trigger / still decision equals the expected one.
+* Worst relative feature error vs the Python expectation (tolerance 1e-4): max_mag 8.4e-08, min_mag 1.0e-07,
+  mean_mag 2.9e-07, std_mag 1.5e-07, range_mag 1.7e-07, max_jerk 4.7e-07, std_mag_post 3.1e-07, count_low 0
+  (exact; newlib prints an exact 0 as `0.00e-308`), tilt_deg 6.6e-07. Largest probability difference 1.19e-07.
+* Time per window over 100 runs (`ztimer_usec`): features + LR **mean 385.3 µs / max 417 µs**; features alone
+  181.1 / 213 µs; LR alone 204.2 / 236 µs (stride at 26 Hz = 500 ms, so ≈ 0.08 % duty).
+
+### 8.5 `r` — replay through the live path — PASS (`r_20261120-112904.log`)
+
+18/18 sequences PASS (period 38461 µs, elapsed 72.1 s): fall+still ×6 → CONFIRMED, fall+moving ×6 → CANCELLED,
+ADL ×6 → no trigger. Host reference: `host_pipe_test` built from the same `pipeline.c` and headers
+(`logs/host_pipe_sim_26hz.txt`, 18/18 PASS). **Row-by-row comparison of kind, source, length, windows, triggers,
+confirmed, cancelled, pending, w0 probability (±1e-6), expectation and result: 0 mismatches in 18 rows.**
+
+### 8.6 `l` — live smoke test, no tuning
+
+One operator, one board, held in the hand (not worn), four runs; each phase is bracketed by EVENT lines
+(`start/end <phase>`; for the falls also `cue fall_k` at 10/30/50/70/90 s after the start cue, announced by a voice
+prompt). `host/analyze_live.py` and the numbers below come from the LIVE lines (`up_ms, wi, p, max, state`);
+`max` is the window's max \|a\| (feature `max_mag`). Zero overruns, I2C errors and resets in all four runs.
+
+| phase (EVENT) | log | duration | stride windows | triggers (p ≥ 0.835) | confirmed / cancelled | p min / p25 / median / p75 / p95 / max | windows with max \|a\| > 2 g | > 3.46 g | max \|a\| median / p95 / max (g) |
+|---|---|---|---|---|---|---|---|---|---|
+| still on table | `l_20261120-113959.log` | 60 s | 125 | **0** | 0 / 0 | 0.0026 / 0.0027 / 0.0027 / 0.0027 / 0.0027 / 0.0027 | 0 (0.0 %) | 0 | 1.05 / 1.05 / 1.05 |
+| held in hand, typing / waving gently | `l_20261120-114139.log` | 60 s | 125 | **0** | 0 / 0 | 0.0027 / 0.0029 / 0.0031 / 0.0038 / 0.0060 / 0.0097 | 0 (0.0 %) | 0 | 1.06 / 1.19 / 1.22 |
+| claps, holding the board | `l_20261120-114315.log` | 40 s | 84 | **12** | 0 / 12 | 0.0031 / 0.0061 / 0.0629 / 0.4824 / 0.9866 / 0.9949 | 41 (48.8 %) | 0 | 1.84 / 3.21 / 3.38 |
+| 5 × fall gesture (swing, set flat, 5 s still) | `l_20261120-114646.log` | 110 s | 230 | **16** | **5** / 0 | 0.0026 / 0.0027 / 0.0027 / 0.0031 / 0.9730 / 1.0000 | 22 (9.6 %) | 16 (7.0 %) | 1.05 / 3.81 / 6.39 |
+
+Triggers vs EVENT lines:
+
+* **Still and in-hand phases: 0 triggers** in 250 windows; p stays ≤ 0.0097.
+* **Fall gestures: every cue produced triggers** within 8 s of its EVENT line (cue 1: 2, cue 2: 2, cue 3: 4, cue 4: 4,
+  cue 5: 4 = all 16 triggers of the phase; **none outside a cue window**), max p 0.9996 / 0.9984 / 1.0000 / 1.0000 /
+  1.0000, window max \|a\| 3.70 / 2.80 / 3.89 / 6.39 / 4.89 g. **5 of 5 gestures were CONFIRMED** by the (placeholder)
+  stillness check once the board was set flat (confirm segments std 0.0023 / 0.0021 / 0.0059 / 0.0075 / 0.0012,
+  mean 1.044 / 1.044 / 1.045 / 1.047 / 0.961 g).
+* **Claps: 12 triggers in 3 episodes** (7.9–15.1 s: 6, 29.4–32.8 s: 4, 39.0–39.5 s: 2 after the start event), all 12
+  CANCELLED (never a still 3 s). The window maxima show about 13 separate bursts above 2 g; the operator did not
+  count the claps, so a triggers-per-clap rate cannot be stated. About half of the clap bursts triggered; clapping is
+  the ADL class that also alarms in the training data.
+
+9 feature values of every trigger are in the logs (`EVT TRIGGER_FEAT`). Range over the triggers (min / median / max):
+
+| feature | 12 clap triggers | 16 fall-gesture triggers |
+|---|---|---|
+| max_mag (g) | 2.402 / 2.994 / 3.375 | 2.796 / 4.394 / 6.395 |
+| min_mag (g) | 0.544 / 0.690 / 0.854 | 0.171 / 0.662 / 0.969 |
+| mean_mag (g) | 1.038 / 1.065 / 1.084 | 1.135 / 1.327 / 1.603 |
+| std_mag (g) | 0.213 / 0.322 / 0.334 | 0.370 / 0.686 / 1.262 |
+| range_mag (g) | 1.773 / 2.298 / 2.667 | 2.303 / 3.837 / 6.203 |
+| max_jerk (g/sample) | 1.270 / 2.077 / 2.365 | 1.169 / 2.104 / 3.574 |
+| std_mag_post (g) | 0.031 / 0.054 / 0.090 | 0.002 / 0.014 / 1.642 |
+| count_low | 0 / 0 / 0 | 0 / 0.5 / 2 |
+| tilt_deg | 6.1 / 20.8 / 45.3 | 41.8 / 152.7 / 170.4 |
+
+**±2 g clipping check** (SmartFallMM's Meta_wrist accelerometer saturates near ±2 g per axis, \|a\| ≤ 3.46 g;
+this board runs at ±16 g). Share of stride windows whose max \|a\| exceeds 2 g: still 0 %, in hand 0 %, claps 48.8 %
+(max 3.38 g, never above 3.46 g), fall gestures 9.6 % of all windows, of which **16 windows (7.0 %) exceed 3.46 g**
+(4 of the 5 gestures, peaks 3.70–6.39 g). For comparison, the training windows (unstretched, max_mag of the
+2 s window; `ml/fall-detection-wrist`): WEDA fall impact windows median 4.97 g, 93.1 % above 3.46 g, max 8.02 g;
+SmartFallMM fall impact windows median 2.73 g, 4.3 % above 3.46 g, max 3.82 g; ADL windows above 2 g: WEDA 27.0 %,
+SmartFallMM 23.4 %. So the board's gesture peaks are inside the WEDA training range but above what SmartFallMM can
+represent; the trigger probabilities of those gestures were ≥ 0.998 regardless, and the gentlest gesture (2.80 g)
+still reached p = 0.9984. What this smoke test cannot say is how a real low-energy fall would score.
+
+Not covered: this is a smoke test (one operator, hand-held, hand gestures instead of falls, unknown number of claps),
+**not a recall or false-alarm estimate**; wrist wear, body-attached falls and a long daily-life recording were not
+tried; no threshold was changed after seeing these runs.
+
+### 8.7 Open items from the on-board run
+
+* Real ODR 27.176 Hz (+4.52 %) on this unit: the model was trained on 26 Hz-resampled data, so windows are 1.913 s
+  and the confirm segment 2.870 s on the device; the training-time ±5 % stretch augmentation spans a shift of this
+  size, but its effect on the device was not evaluated.
+* The long-lie parameters are still placeholders; the 5/5 confirmations here show only that the code path works.
+* Wrist-worn recordings with the 26 Hz firmware are needed to recalibrate the threshold on own-device data.
