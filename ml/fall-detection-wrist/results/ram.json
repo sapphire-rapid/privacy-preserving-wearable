@@ -1,0 +1,14 @@
+{
+ "stack_bytes_trigger_prob": 344,
+ "stack_bytes_still": 16,
+ "su_all": {
+  "fall_std_pop": 0,
+  "trigger_prob": 344,
+  "still": 16
+ },
+ "data_bytes": 0,
+ "bss_bytes": 0,
+ "window_buffer_bytes": 624,
+ "long_lie_placeholder_buffer_bytes": 312,
+ "note": "stack from -fstack-usage (Cortex-M4F, -Os, static estimate by the compiler incl. callees only if inlined); window buffer = WIN_SAMPLES*3*4 B owned by the caller; libm exp/sqrt/atan2 stack not included"
+}

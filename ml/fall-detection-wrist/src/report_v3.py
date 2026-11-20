@@ -51,9 +51,9 @@ def breakdown_md(ds, model, targets=(0.90, 0.95)):
     for t in targets:
         b = E.adl_breakdown(o[o.target == t], NAMES, 5)
         out.append(f"**{LABEL.get(model, model)} — recall target {int(t*100)} %** (ADL trials alarmed / trials, share of that dataset's false alarms)\n")
-        out.append("| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |\n|---|---|---|---|---|")
+        out.append("| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |\n|---|---|---|---|---|---|")
         for _, r in b.iterrows():
-            out.append(f"| {r.dataset} | {r.ftype} {r.activity} | {int(r.alarmed)}/{int(r.trials)} | {r.far*100:.0f}% | {r.share_of_dataset_FAs*100:.0f}% |")
+            out.append(f"| {r.dataset} | {r.ftype} {r.activity} | {int(r.alarmed)}/{int(r.trials)} | {r.far*100:.0f}% | {r.alarmed_per_hour:.0f} | {r.share_of_dataset_FAs*100:.0f}% |")
         out.append("")
     return "\n".join(out)
 
@@ -124,7 +124,7 @@ def gyro_fs_md():
              "(ST product page: 0.90 mA in high-performance mode; LSM6DS3 datasheet: 0.9 mA combo normal mode, 1.25 mA combo high-performance mode, low-power mode available at ODR 12.5/26/52 Hz via the G_HM_MODE bit in CTRL7_G) "
              "— these are the sibling-part/combined numbers, **not** the gyro-only 26 Hz figure needed here. Sources: [ST product page](https://st.com/en/mems-and-sensors/lsm6ds3tr-c.html), "
              "[LSM6DS3 datasheet (Arduino mirror)](https://docs.arduino.cc/resources/datasheets/LSM6DS3-datasheet.pdf). Read the gyro rows of the 'electrical characteristics' table before committing to a power budget.")
-    L.append("- **Firmware impact (nothing changed):** `imu.c` already configures the gyro (`.gyro_odr = LSM6DSXX_DATA_RATE_52HZ`, **`.gyro_fs = LSM6DSXX_GYRO_FS_245DPS`**, no decimation; grep finds no other gyro reference, so it is configured but never read). "
+    L.append("- **Firmware impact of adding the gyro (not implemented):** `imu.c` already configures the gyro (`.gyro_odr = LSM6DSXX_DATA_RATE_52HZ`, **`.gyro_fs = LSM6DSXX_GYRO_FS_245DPS`**, no decimation; grep finds no other gyro reference, so it is configured but never read). "
              "The current ±245 dps setting would clip essentially every fall (100% of WEDA falls exceed 250 dps), so v3 needs FS raised to 2000 dps (sensitivity falls from 8.75 to 70 mdps/LSB — datasheet values, unverified here), the gyro ODR set to 26 Hz, "
              "and a read path that delivers sample-aligned |ω| and |a| (whether the two sensors share an ODR clock at equal rates is **not verified here**). The six gyro features are norms and angle sums, hence invariant to sensor orientation (checked in `test_gyro_features.py`) — no axis calibration is needed.")
     return "\n".join(L)

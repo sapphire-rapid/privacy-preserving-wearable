@@ -123,7 +123,7 @@ def main():
     out["PASS"] = bool(out["PASS_features_1e-4"] and out["PASS_decisions"] and out["PASS_host_test"])
     json.dump(out, open(os.path.join(RES, "parity.json"), "w"), indent=1)
 
-    L = ["# C parity (Step 6)\n", f"Firmware `fall_features.h` sha256[:16] `{out['firmware_fall_features_sha']}` (copied unmodified to a build dir; firmware include dir untouched). "
+    L = ["# C parity (Step 6)\n", f"Firmware `fall_features.h` sha256[:16] `{out['firmware_fall_features_sha']}` (`fall_features.h` itself is unmodified; it is copied byte-identically to a build dir so that its quoted include picks up the new `fall_model.h`). "
          f"Exported operating point: mode `{op['op_mode']}`, thr {op['thr']}, std {op['std']}, tol {op['mean_tol']} (provisional={op['provisional']}).\n",
          f"- `host_test.c` built with gcc against the new headers: compile rc={out['host_test_compile']['rc']}; run rc={out.get('host_test', {}).get('rc')}; last lines:\n\n```\n{out.get('host_test', {}).get('tail', '')}\n```\n",
          f"- {len(W)} random train windows ({len(W)-200} random sliding + 200 fall-impact) through the C feature code vs Python float64 on the same float32 inputs; PASS needs every feature within {REL_TOL:g} relative:\n",

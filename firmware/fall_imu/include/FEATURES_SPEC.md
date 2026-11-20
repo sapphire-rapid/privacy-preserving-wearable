@@ -1,3 +1,5 @@
+> **Note (wrist model):** `fall_model.h` / `test_windows.h` in this directory are now the **wrist LR @ 26 Hz** model (`ml/fall-detection-wrist/`; thr 0.835, window 52 / stride 13 / confirm 78 placeholders). The numbers and worked examples below describe the earlier SisFall-waist 52 Hz model (WIN 104, STRIDE 26, thr 0.93, std 0.05) and are kept as the definition of the features; all rate-dependent constants are the macros in `fall_model.h`.
+
 # FEATURES_SPEC.md
 
 ## 1. Source of the 9 features (verbatim from `src/features_v2.py`)

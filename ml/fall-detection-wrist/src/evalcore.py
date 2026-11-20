@@ -229,6 +229,7 @@ def adl_breakdown(df, names, top=5):
         t = g.groupby("ftype").agg(trials=("trig", "size"), alarmed=("trig", "sum"), hours=("dur_s", lambda x: x.sum() / 3600.0)).reset_index()
         t["far"] = t.alarmed / t.trials
         t["share_of_dataset_FAs"] = t.alarmed / max(tot, 1)
+        t["alarmed_per_hour"] = t.alarmed / t.hours
         t = t.sort_values(["alarmed", "far"], ascending=False).head(top)
         t.insert(0, "dataset", ds_)
         t["activity"] = [names.get(k, k) for k in t.ftype]

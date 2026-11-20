@@ -4,13 +4,86 @@ Same 9 features, same logistic-regression pipeline as the SisFall-waist model, r
 
 ## 0. Read this first
 
-Decisions applied since the first version of this report: (1) **stillness is no longer part of fall detection** — it is the later long-lie (U3 severity) stage; the fall trigger is tuned on its own (trigger-only), post-impact stillness is reported as a finding (§5), and the old confirm-stage tables are kept only in Appendix A; (2) the BITS dataset is called **"BITS wrist IMU+HR (ages 20–47)"** (the on-disk folder `bits_geriatric` is misleading — paper: 41 volunteers aged 20–47, read by a sub-agent from PMC10709028, not independently re-verified); its rule 5 (timestamp-span check) is skipped, the **20 Hz-by-sample-order assumption** stands (timestamps are rounded to 3 significant digits, so the rate cannot be verified), and the **BITS run is ON HOLD** (no lock file created, nothing evaluated).
+**Decision taken:** accelerometer-only LR @ 26 Hz (9 features), trigger tuned on its own for **90 % fall recall** (pooled CV threshold 0.835); gyro deferred (ablation in §6); stillness is the later long-lie stage (placeholders only, finding in §5). The header `include/fall_model.h` was regenerated at this point (C parity PASS) and copied into `firmware/fall_imu/include/` (rebuilt, host test run, **not flashed**). The BITS wrist IMU+HR (ages 20–47) held-out set was evaluated **once** (§9); nothing was retuned afterwards.
 
-What to know before reading the numbers:
+Headline: cross-validated on WEDA + SmartFallMM the trigger catches 90 % of falls with about one ADL trial in four raising a false alarm; on BITS the same fixed threshold catches 81 % of falls with about one in five ADL trials alarming. All ADL trials are curated vigorous activities, so the per-hour false-alarm rates are a stress test, not daily-life rates. The threshold must be recalibrated on own-device data.
 
-1. **Operating curve (§4):** at the 90 % recall target the accelerometer-only LR@26 Hz raises a false alarm in about one ADL trial in four (23 %); at 95 % in one in three (34 %). One pooled threshold behaves very differently on the two datasets (§4). The ADL trials are curated vigorous activities, so per-hour rates are a stress test, not daily life.
-2. **Gyro (§6):** WEDA's gyro reaches ≈ 2000 dps while SmartFallMM's Meta_wrist gyro clips at ±125 dps in ~97 % of trials, so the gyro comparison is run on two populations. With an unclipped gyro the 6 extra features reduce ADL false alarms by ≈ 2 pp (13–23 % relative) at equal recall; with a ±125 dps gyro they do nothing. The firmware's current gyro config (±245 dps, never read) would clip every fall. **Recommendation (§6.5): stay with the 9 accelerometer features and the 90 % operating point; revisit the gyro on your own recordings.**
-3. **Header is provisional:** `include/fall_model.h` carries the final weights, the 95 % threshold (0.671) until you choose a target, and std 0.08 / tol 0.2 / 3 s **as long-lie placeholders**. No C or firmware code was changed in this round.
+## Final model card — wrist fall trigger (acc9 LR @ 26 Hz)
+
+| item | value |
+|---|---|
+| decision | accelerometer-only logistic regression, 9 features, 26 Hz, trigger tuned on its own for **90 % fall recall**; gyro deferred (ablation §6); stillness = later long-lie stage (placeholders only) |
+| features (`features_v2.py`, scaled to 26 Hz) | max_mag, min_mag, mean_mag, std_mag, range_mag, max_jerk, std_mag_post, count_low, tilt_deg |
+| sampling / windows | `SAMPLE_RATE_HZ` 26 (LSM6DSXX `DATA_RATE_26HZ`), window 52 samples (2 s), stride 13 (0.5 s), tilt pre/post 13, tilt fallback 5, post-std 26 |
+| model | StandardScaler + LR (balanced), 140338 training windows (3123 positive, time-stretch 0.95/1.00/1.05) from 81 subjects; 28 floats (scaler 18 + coef 9 + intercept) |
+| **fall threshold** | **p ≥ 0.835** — pooled 5-fold subject-grouped CV threshold for ≥ 90 % recall at the lowest ADL false-alarm rate (per outer fold 0.78–0.84; inner-CV recall 90.0 %, ADL false alarms 22.9 % per trial). **To be recalibrated on own-device data.** |
+| long-lie placeholders (not validated, not used by the trigger) | `FALL_STILL_STD_THR` 0.08, `FALL_STILL_MEAN_TOL` 0.2, `CONFIRM_SAMPLES` 78 (3 s) |
+| flash (measured, Cortex-M4F, `-Os`, libm excluded) | **1044 B** = features 720 B + LR 324 B (model constants 112 B) |
+| RAM | window buffer 624 B (52 × 3 floats, caller-owned; arithmetic) + stack 344 B for feature extraction + LR (measured with `-fstack-usage`, libm callees excluded); static data 0 B. The long-lie placeholder would add 312 B. |
+| C parity | host `fall_features.h` vs Python on 1000 random train windows: every feature within 1e-4 relative (worst 7.0e-05), 0 trigger and 0 stillness mismatches; firmware `host_test.c` ALL PASS → **PASS** |
+
+### Results at the chosen operating point
+
+Cross-validated rows use the per-fold nested thresholds; the BITS row uses the final threshold 0.835 exactly and was run **once**, with no retuning afterwards. Every per-trial false-alarm rate has its per-hour counterpart next to it. **The ADL trials in all three datasets are curated, vigorous activities (jogging, jumping, hitting a table, clapping, putting on a jacket, sweeping, stairs, …) — the per-hour figures are a stress test, not a daily-life false-alarm rate.**
+
+| set | fall recall (trigger) | ADL false alarms **per trial** | alarmed ADL trials **per ADL hour** | alarm events **per ADL hour** |
+|---|---|---|---|---|
+| CV pooled (WEDA + SmartFallMM) | 90.1% [85.4, 94.3] (938/1041) | 23.3% [19.7, 27.2] (557/2393) | 74.1 [64.5, 84.2] | 84.2 [73.5, 95.6] |
+| CV WEDA only | 100.0% [100.0, 100.0] (350/350) | 43.3% [36.9, 48.9] (268/619) | 119.1 [104.6, 131.8] | 128.0 [112.0, 142.9] |
+| CV SmartFallMM only | 85.1% [79.1, 90.2] (588/691) | 16.3% [13.9, 18.7] (289/1774) | 54.8 [46.8, 63.8] | 65.5 [55.8, 75.4] |
+| **BITS wrist IMU+HR (ages 20–47), single held-out run, thr 0.835** | 81.0% [76.1, 85.4] (265/327) | 19.3% [16.1, 22.8] (112/581) | 22.3 [18.4, 27.1] | 37.6 [29.9, 47.0] |
+
+BITS: 4 of 912 files after rule 4 are shorter than one 2 s window at 26 Hz and cannot be scored (1 fall, 3 ADL); 20 Hz is assumed by sample order (timestamps are rounded to 3 significant digits); ages 20–47. CV recall 90.1% [85.4, 94.3] vs BITS 81.0% [76.1, 85.4]: the held-out recall is about 9 pp below the target — a real domain shift (different device, wrist, protocol), which is why the threshold must be recalibrated on own-device data.
+
+Per fall type:
+
+| fall type | CV recall at 90 % target | BITS recall (thr 0.835; **inferred** index → type mapping) |
+|---|---|---|
+| WEDA F01 fwd fall walking (slip) | 100.0% [100.0, 100.0] (42/42) | – |
+| WEDA F02 lateral fall walking (slip) | 100.0% [100.0, 100.0] (42/42) | – |
+| WEDA F03 back fall walking (slip) | 100.0% [100.0, 100.0] (42/42) | – |
+| WEDA F04 fwd fall walking (trip) | 100.0% [100.0, 100.0] (42/42) | – |
+| WEDA F05 back fall trying to sit | 100.0% [100.0, 100.0] (42/42) | – |
+| WEDA F06 fwd fall sitting (faint) | 100.0% [100.0, 100.0] (42/42) | – |
+| WEDA F07 back fall sitting (faint) | 100.0% [100.0, 100.0] (42/42) | – |
+| WEDA F08 lateral fall sitting (faint) | 100.0% [100.0, 100.0] (56/56) | – |
+| SmartFallMM A10 backfall | 89.0% [80.5, 95.9] (129/145) | – |
+| SmartFallMM A11 frontfall | 81.5% [72.3, 89.4] (110/135) | – |
+| SmartFallMM A12 leftfall | 81.9% [72.8, 90.3] (113/138) | – |
+| SmartFallMM A13 rightfall | 91.3% [86.9, 95.5] (126/138) | – |
+| SmartFallMM A14 rotatefall | 81.5% [71.1, 90.2] (110/135) | – |
+| BITS fall1 forward fall landing on knee | – | 78.0% [63.4, 90.2] (32/41) |
+| BITS fall2 right fall | – | 75.6% [63.4, 87.8] (31/41) |
+| BITS fall3 left fall | – | 90.2% [80.5, 97.6] (37/41) |
+| BITS fall4 forward fall | – | 97.6% [92.7, 100.0] (40/41) |
+| BITS fall5 seated on bed, falling to ground | – | 68.3% [53.7, 80.5] (28/41) |
+| BITS fall6 forward fall, body weight on hand | – | 92.7% [82.9, 100.0] (38/41) |
+| BITS fall7 backward fall from seated | – | 48.8% [34.1, 63.4] (20/41) |
+| BITS fall8 grabbing while falling | – | 97.5% [92.1, 100.0] (39/40) |
+
+### Domain gap, gyro ablation, stillness finding
+
+**Waist → wrist domain gap:**
+
+| model (set) | fall recall (trigger) | ADL false alarms per trial | alarmed ADL trials per ADL hour |
+|---|---|---|---|
+| SisFall-waist LR, unchanged, 52 Hz, own threshold 0.93 (WEDA + SmartFallMM pool) | 79.1% [72.9, 85.6] (823/1041) | 31.6% [28.4, 35.1] (757/2393) | 100.7 [91.1, 110.4] |
+| Wrist LR @ 26 Hz, chosen point (CV, same pool) | 90.1% [85.4, 94.3] (938/1041) | 23.3% [19.7, 27.2] (557/2393) | 74.1 [64.5, 84.2] |
+| Wrist LR @ 26 Hz, chosen point (BITS single run) | 81.0% [76.1, 85.4] (265/327) | 19.3% [16.1, 22.8] (112/581) | 22.3 [18.4, 27.1] |
+
+The waist model transfers poorly to the wrist — at its own fixed threshold it detects 79 % of wrist falls while still alarming on about a third of ADL trials; the retrained wrist LR reaches 90 % recall at a lower false-alarm rate. The baseline was not run on BITS (BITS was used once, for the final model only). The comparison is not threshold-matched.
+
+- **Gyro ablation (§6):** *small significant gain only with an unclipped gyro; deferred for power / full-scale.* With WEDA's native-range gyro, 6 extra orientation-invariant features cut ADL false alarms by ≈ 2 pp at equal recall (paired CIs exclude zero at 85–95 %); with a ±125 dps gyro (SmartFallMM, harmonised pool) the effect is nil. The firmware gyro is currently ±245 dps and unused; ±2000 dps would be needed.
+- **Stillness finding (§5):** after a fall, a 3 s stretch with std < 0.08 g / |mean−1| < 0.2 starts within 3 s of the peak in 92 % of evaluable WEDA falls (212/231) and 23 % of SmartFallMM falls (41/182); within 5 s: 99 % (89/90) vs 31 % (19/62). No recall target; 10 s horizon has too little data (2 and 11 falls).
+
+### Limitations
+
+- **Simulated falls only**: every fall is scripted by a volunteer (WEDA on a mattress); no real falls, no real-life ADL stream, so absolute false-alarm rates do not transfer to daily life.
+- **Young fallers only**: all WEDA and SmartFallMM falls are by young adults (WEDA 14 subjects, one aged 46), BITS volunteers are 20–47; elderly data are ADL-only, so fall detection for older users is untested (the BITS folder name 'geriatric' is wrong).
+- **One pooled threshold, heterogeneous data**: WEDA falls score higher and WEDA ADL alarm more than SmartFallMM's; the chosen threshold gives different recall / false-alarm trade-offs per dataset and a ≈ 9 pp recall drop on BITS. Recalibrate on own-device data before relying on 90 %.
+- **Sensor and clock caveats**: WEDA fall files are sampled at ≈ 39.8 Hz vs ≈ 49.7 Hz for ADL (handled with per-trial linear time axes; checked at 26 Hz), SmartFallMM mixes 25 and 50 Hz and its accelerometer saturates near ±2 g per axis (11 % of SmartFallMM falls peak at ≈ 3.46 g = 2·√3 g), BITS rate and regularity are assumed.
+- **Confirm/long-lie stage is unvalidated** on wrist data; the placeholders only keep the header self-consistent.
+
 
 ## 1. Data card summary (full card: `DATA_CARD.md`)
 
@@ -18,7 +91,7 @@ What to know before reading the numbers:
 |---|---|---|---|---|---|---|---|
 | WEDA-FALL | train pool | falls 39.8 Hz / ADL 49.7 Hz (median effective) | ÷9.80665 | 350 | 345 | 619 | Fitbit Sense wrist; falls young only (U01–U14), elderly ADL-only; fall files ≈39.8 Hz vs ADL ≈49.7 Hz effective, burst-stamped → per-trial linear time axis |
 | SmartFallMM | train pool | 1983 segments ≈50 Hz, 530 ≈25 Hz, 4 other | already g | 691 | 351 | 1826 | SmartFallMM Meta_wrist (© SmartFall Group, Texas State Univ.; credit required, not redistributed); 50 Hz and 25 Hz sessions; ISO clock; 32 non-g ADL files dropped; split at gaps > 1 s |
-| BITS wrist IMU+HR (ages 20–47) | held-out, ON HOLD | 20 Hz assumed by sample order (not verifiable) | ÷9.80665 (`acg`) | 328 files | – | 656 files | rule 4 drops 72 files (0 falls); rule 5 skipped by decision |
+| BITS wrist IMU+HR (ages 20–47) | held-out, single run done (§9) | 20 Hz assumed by sample order (not verifiable) | ÷9.80665 (`acg`) | 328 files | – | 656 files | rule 4 drops 72 files (0 falls); rule 5 skipped by decision |
 
 After exclusions the pool has **1041 fall trials** (350 WEDA + 691 SFMM) and 2393 ADL trials (2445 segments, 7.52 h); 726 falls have ≥ 3 s after the |a| peak and **696 are confirm-eligible** (a window containing the peak has its full 3 s confirm segment inside the recording; this implies ≥ 3 s after the peak). Subjects: 81 (WEDA 25, SFMM 56). Every exclusion is listed in `DATA_CARD.md` §5.
 
@@ -90,33 +163,33 @@ At the 90 % and 95 % targets (all four targets: `results/ADL_BREAKDOWN.md`). An 
 
 **(i) acc9, LR — recall target 90 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| SFMM | A03 Put On and Take Off Jacket | 160/208 | 77% | 55% |
-| SFMM | A07 Waving Hand | 44/231 | 19% | 15% |
-| SFMM | A06 Washing Hand | 20/246 | 8% | 7% |
-| SFMM | A09 Sit/Stand | 16/142 | 11% | 6% |
-| SFMM | A05 Sweeping Floor | 12/236 | 5% | 4% |
-| WEDA | D09 hit table with hand | 57/73 | 78% | 21% |
-| WEDA | D02 jogging | 42/42 | 100% | 16% |
-| WEDA | D08 gentle jump | 39/42 | 93% | 15% |
-| WEDA | D10 clapping | 30/74 | 41% | 11% |
-| WEDA | D07 stumble while walking | 28/42 | 67% | 10% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| SFMM | A03 Put On and Take Off Jacket | 160/208 | 77% | 160 | 55% |
+| SFMM | A07 Waving Hand | 44/231 | 19% | 67 | 15% |
+| SFMM | A06 Washing Hand | 20/246 | 8% | 31 | 7% |
+| SFMM | A09 Sit/Stand | 16/142 | 11% | 36 | 6% |
+| SFMM | A05 Sweeping Floor | 12/236 | 5% | 17 | 4% |
+| WEDA | D09 hit table with hand | 57/73 | 78% | 438 | 21% |
+| WEDA | D02 jogging | 42/42 | 100% | 199 | 16% |
+| WEDA | D08 gentle jump | 39/42 | 93% | 500 | 15% |
+| WEDA | D10 clapping | 30/74 | 41% | 144 | 11% |
+| WEDA | D07 stumble while walking | 28/42 | 67% | 254 | 10% |
 
 **(i) acc9, LR — recall target 95 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| SFMM | A03 Put On and Take Off Jacket | 195/208 | 94% | 40% |
-| SFMM | A07 Waving Hand | 98/231 | 42% | 20% |
-| SFMM | A06 Washing Hand | 57/246 | 23% | 12% |
-| SFMM | A05 Sweeping Floor | 35/236 | 15% | 7% |
-| SFMM | A04 Stepping Up | 25/115 | 22% | 5% |
-| WEDA | D09 hit table with hand | 64/73 | 88% | 19% |
-| WEDA | D02 jogging | 42/42 | 100% | 13% |
-| WEDA | D08 gentle jump | 40/42 | 95% | 12% |
-| WEDA | D10 clapping | 39/74 | 53% | 12% |
-| WEDA | D07 stumble while walking | 33/42 | 79% | 10% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| SFMM | A03 Put On and Take Off Jacket | 195/208 | 94% | 196 | 40% |
+| SFMM | A07 Waving Hand | 98/231 | 42% | 150 | 20% |
+| SFMM | A06 Washing Hand | 57/246 | 23% | 89 | 12% |
+| SFMM | A05 Sweeping Floor | 35/236 | 15% | 50 | 7% |
+| SFMM | A04 Stepping Up | 25/115 | 22% | 93 | 5% |
+| WEDA | D09 hit table with hand | 64/73 | 88% | 492 | 19% |
+| WEDA | D02 jogging | 42/42 | 100% | 199 | 13% |
+| WEDA | D08 gentle jump | 40/42 | 95% | 513 | 12% |
+| WEDA | D10 clapping | 39/74 | 53% | 187 | 12% |
+| WEDA | D07 stumble while walking | 33/42 | 79% | 300 | 10% |
 
 
 ## 5. Post-impact stillness — a finding, not a detection criterion
@@ -249,43 +322,43 @@ ADL false-alarm breakdown (top 5 per dataset) at the 90 % and 95 % targets, acc9
 
 **(i) acc9, LR — recall target 90 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| WEDA | D09 hit table with hand | 25/73 | 34% | 37% |
-| WEDA | D02 jogging | 22/42 | 52% | 33% |
-| WEDA | D08 gentle jump | 9/42 | 21% | 13% |
-| WEDA | D07 stumble while walking | 5/42 | 12% | 7% |
-| WEDA | D05 sit, try to rise, collapse into chair | 3/42 | 7% | 4% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| WEDA | D09 hit table with hand | 25/73 | 34% | 192 | 37% |
+| WEDA | D02 jogging | 22/42 | 52% | 104 | 33% |
+| WEDA | D08 gentle jump | 9/42 | 21% | 115 | 13% |
+| WEDA | D07 stumble while walking | 5/42 | 12% | 45 | 7% |
+| WEDA | D05 sit, try to rise, collapse into chair | 3/42 | 7% | 26 | 4% |
 
 **(i) acc9, LR — recall target 95 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| WEDA | D02 jogging | 35/42 | 83% | 35% |
-| WEDA | D09 hit table with hand | 28/73 | 38% | 28% |
-| WEDA | D08 gentle jump | 16/42 | 38% | 16% |
-| WEDA | D07 stumble while walking | 8/42 | 19% | 8% |
-| WEDA | D05 sit, try to rise, collapse into chair | 7/42 | 17% | 7% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| WEDA | D02 jogging | 35/42 | 83% | 166 | 35% |
+| WEDA | D09 hit table with hand | 28/73 | 38% | 215 | 28% |
+| WEDA | D08 gentle jump | 16/42 | 38% | 205 | 16% |
+| WEDA | D07 stumble while walking | 8/42 | 19% | 73 | 8% |
+| WEDA | D05 sit, try to rise, collapse into chair | 7/42 | 17% | 60 | 7% |
 
 **(ii) acc9 + gyro (15), LR — recall target 90 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| WEDA | D09 hit table with hand | 24/73 | 33% | 46% |
-| WEDA | D02 jogging | 12/42 | 29% | 23% |
-| WEDA | D08 gentle jump | 8/42 | 19% | 15% |
-| WEDA | D05 sit, try to rise, collapse into chair | 4/42 | 10% | 8% |
-| WEDA | D07 stumble while walking | 3/42 | 7% | 6% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| WEDA | D09 hit table with hand | 24/73 | 33% | 184 | 46% |
+| WEDA | D02 jogging | 12/42 | 29% | 57 | 23% |
+| WEDA | D08 gentle jump | 8/42 | 19% | 103 | 15% |
+| WEDA | D05 sit, try to rise, collapse into chair | 4/42 | 10% | 34 | 8% |
+| WEDA | D07 stumble while walking | 3/42 | 7% | 27 | 6% |
 
 **(ii) acc9 + gyro (15), LR — recall target 95 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| WEDA | D09 hit table with hand | 29/73 | 40% | 33% |
-| WEDA | D02 jogging | 22/42 | 52% | 25% |
-| WEDA | D08 gentle jump | 15/42 | 36% | 17% |
-| WEDA | D05 sit, try to rise, collapse into chair | 8/42 | 19% | 9% |
-| WEDA | D07 stumble while walking | 8/42 | 19% | 9% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| WEDA | D09 hit table with hand | 29/73 | 40% | 223 | 33% |
+| WEDA | D02 jogging | 22/42 | 52% | 104 | 25% |
+| WEDA | D08 gentle jump | 15/42 | 36% | 192 | 17% |
+| WEDA | D05 sit, try to rise, collapse into chair | 8/42 | 19% | 68 | 9% |
+| WEDA | D07 stumble while walking | 8/42 | 19% | 73 | 9% |
 
 
 ### 6.2 Pooled, gyro harmonised to ±125 dps
@@ -342,70 +415,70 @@ ADL false-alarm breakdown (top 5 per dataset) at the 90 % and 95 % targets, acc9
 
 **(i) acc9, LR — recall target 90 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| SFMM | A03 Put On and Take Off Jacket | 83/105 | 79% | 55% |
-| SFMM | A07 Waving Hand | 19/119 | 16% | 13% |
-| SFMM | A09 Sit/Stand | 13/95 | 14% | 9% |
-| SFMM | A04 Stepping Up | 7/42 | 17% | 5% |
-| SFMM | A06 Washing Hand | 7/123 | 6% | 5% |
-| WEDA | D09 hit table with hand | 57/73 | 78% | 23% |
-| WEDA | D02 jogging | 42/42 | 100% | 17% |
-| WEDA | D08 gentle jump | 37/42 | 88% | 15% |
-| WEDA | D07 stumble while walking | 28/42 | 67% | 11% |
-| WEDA | D10 clapping | 23/74 | 31% | 9% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| SFMM | A03 Put On and Take Off Jacket | 83/105 | 79% | 171 | 55% |
+| SFMM | A07 Waving Hand | 19/119 | 16% | 56 | 13% |
+| SFMM | A09 Sit/Stand | 13/95 | 14% | 51 | 9% |
+| SFMM | A04 Stepping Up | 7/42 | 17% | 80 | 5% |
+| SFMM | A06 Washing Hand | 7/123 | 6% | 21 | 5% |
+| WEDA | D09 hit table with hand | 57/73 | 78% | 438 | 23% |
+| WEDA | D02 jogging | 42/42 | 100% | 199 | 17% |
+| WEDA | D08 gentle jump | 37/42 | 88% | 474 | 15% |
+| WEDA | D07 stumble while walking | 28/42 | 67% | 254 | 11% |
+| WEDA | D10 clapping | 23/74 | 31% | 110 | 9% |
 
 **(i) acc9, LR — recall target 95 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| SFMM | A03 Put On and Take Off Jacket | 91/105 | 87% | 43% |
-| SFMM | A07 Waving Hand | 37/119 | 31% | 18% |
-| SFMM | A06 Washing Hand | 18/123 | 15% | 9% |
-| SFMM | A09 Sit/Stand | 17/95 | 18% | 8% |
-| SFMM | A02 Pick Up Object | 17/128 | 13% | 8% |
-| WEDA | D09 hit table with hand | 60/73 | 82% | 21% |
-| WEDA | D02 jogging | 42/42 | 100% | 15% |
-| WEDA | D08 gentle jump | 38/42 | 90% | 13% |
-| WEDA | D10 clapping | 33/74 | 45% | 12% |
-| WEDA | D07 stumble while walking | 29/42 | 69% | 10% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| SFMM | A03 Put On and Take Off Jacket | 91/105 | 87% | 187 | 43% |
+| SFMM | A07 Waving Hand | 37/119 | 31% | 109 | 18% |
+| SFMM | A06 Washing Hand | 18/123 | 15% | 53 | 9% |
+| SFMM | A09 Sit/Stand | 17/95 | 18% | 67 | 8% |
+| SFMM | A02 Pick Up Object | 17/128 | 13% | 62 | 8% |
+| WEDA | D09 hit table with hand | 60/73 | 82% | 461 | 21% |
+| WEDA | D02 jogging | 42/42 | 100% | 199 | 15% |
+| WEDA | D08 gentle jump | 38/42 | 90% | 487 | 13% |
+| WEDA | D10 clapping | 33/74 | 45% | 158 | 12% |
+| WEDA | D07 stumble while walking | 29/42 | 69% | 263 | 10% |
 
 **(ii) acc9 + gyro (15), LR — recall target 90 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| SFMM | A03 Put On and Take Off Jacket | 76/105 | 72% | 50% |
-| SFMM | A07 Waving Hand | 22/119 | 18% | 14% |
-| SFMM | A09 Sit/Stand | 15/95 | 16% | 10% |
-| SFMM | A02 Pick Up Object | 9/128 | 7% | 6% |
-| SFMM | A06 Washing Hand | 8/123 | 7% | 5% |
-| WEDA | D09 hit table with hand | 58/73 | 79% | 24% |
-| WEDA | D02 jogging | 42/42 | 100% | 17% |
-| WEDA | D08 gentle jump | 35/42 | 83% | 14% |
-| WEDA | D07 stumble while walking | 25/42 | 60% | 10% |
-| WEDA | D05 sit, try to rise, collapse into chair | 21/42 | 50% | 9% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| SFMM | A03 Put On and Take Off Jacket | 76/105 | 72% | 156 | 50% |
+| SFMM | A07 Waving Hand | 22/119 | 18% | 65 | 14% |
+| SFMM | A09 Sit/Stand | 15/95 | 16% | 59 | 10% |
+| SFMM | A02 Pick Up Object | 9/128 | 7% | 33 | 6% |
+| SFMM | A06 Washing Hand | 8/123 | 7% | 24 | 5% |
+| WEDA | D09 hit table with hand | 58/73 | 79% | 445 | 24% |
+| WEDA | D02 jogging | 42/42 | 100% | 199 | 17% |
+| WEDA | D08 gentle jump | 35/42 | 83% | 449 | 14% |
+| WEDA | D07 stumble while walking | 25/42 | 60% | 227 | 10% |
+| WEDA | D05 sit, try to rise, collapse into chair | 21/42 | 50% | 180 | 9% |
 
 **(ii) acc9 + gyro (15), LR — recall target 95 %** (ADL trials alarmed / trials, share of that dataset's false alarms)
 
-| dataset | activity | alarmed / trials | false-alarm rate | share of dataset's false alarms |
-|---|---|---|---|---|
-| SFMM | A03 Put On and Take Off Jacket | 89/105 | 85% | 41% |
-| SFMM | A07 Waving Hand | 35/119 | 29% | 16% |
-| SFMM | A09 Sit/Stand | 21/95 | 22% | 10% |
-| SFMM | A02 Pick Up Object | 18/128 | 14% | 8% |
-| SFMM | A06 Washing Hand | 15/123 | 12% | 7% |
-| WEDA | D09 hit table with hand | 61/73 | 84% | 21% |
-| WEDA | D02 jogging | 42/42 | 100% | 15% |
-| WEDA | D08 gentle jump | 40/42 | 95% | 14% |
-| WEDA | D07 stumble while walking | 30/42 | 71% | 10% |
-| WEDA | D05 sit, try to rise, collapse into chair | 25/42 | 60% | 9% |
+| dataset | activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of dataset's false alarms |
+|---|---|---|---|---|---|
+| SFMM | A03 Put On and Take Off Jacket | 89/105 | 85% | 183 | 41% |
+| SFMM | A07 Waving Hand | 35/119 | 29% | 103 | 16% |
+| SFMM | A09 Sit/Stand | 21/95 | 22% | 83 | 10% |
+| SFMM | A02 Pick Up Object | 18/128 | 14% | 66 | 8% |
+| SFMM | A06 Washing Hand | 15/123 | 12% | 44 | 7% |
+| WEDA | D09 hit table with hand | 61/73 | 84% | 468 | 21% |
+| WEDA | D02 jogging | 42/42 | 100% | 199 | 15% |
+| WEDA | D08 gentle jump | 40/42 | 95% | 513 | 14% |
+| WEDA | D07 stumble while walking | 30/42 | 71% | 273 | 10% |
+| WEDA | D05 sit, try to rise, collapse into chair | 25/42 | 60% | 214 | 9% |
 
 
-### 6.3 Firmware feasibility notes (no firmware or C code changed)
+### 6.3 Firmware feasibility notes (analysis-time findings; gyro not implemented)
 
 - **Gyro full scale.** Peak |ω| of WEDA falls (sensor limit ≈ 2000 dps, so the upper tail is itself clipped): median 727, p90 1210, p95 1422, p99 1760, max 2008 dps; 87% of falls exceed ±500 dps, 23% exceed ±1000, 3% exceed ±1500. BITS falls (descriptive only, no clipping): median 491, p95 1031, max 1393 dps. **±2000 dps is needed to avoid clipping the upper tail; ±1000 dps would clip ≈23% of falls near the impact (the features use the maximum and the integrated angle), ±500 dps ≈87%.** SmartFallMM's ±125 dps part cannot tell (it saturates in 83% of its falls) — which is also why the pooled gyro result is a lower bound.
 - **LSM6DS3TR-C gyro supply current at 26 Hz: UNVERIFIED.** The ST datasheet fetch timed out twice and the Digi-Key/Mouser copies were not reachable by the fetch tool; a web search returned only combined figures (ST product page: 0.90 mA in high-performance mode; LSM6DS3 datasheet: 0.9 mA combo normal mode, 1.25 mA combo high-performance mode, low-power mode available at ODR 12.5/26/52 Hz via the G_HM_MODE bit in CTRL7_G) — these are the sibling-part/combined numbers, **not** the gyro-only 26 Hz figure needed here. Sources: [ST product page](https://st.com/en/mems-and-sensors/lsm6ds3tr-c.html), [LSM6DS3 datasheet (Arduino mirror)](https://docs.arduino.cc/resources/datasheets/LSM6DS3-datasheet.pdf). Read the gyro rows of the 'electrical characteristics' table before committing to a power budget.
-- **Firmware impact (nothing changed):** `imu.c` already configures the gyro (`.gyro_odr = LSM6DSXX_DATA_RATE_52HZ`, **`.gyro_fs = LSM6DSXX_GYRO_FS_245DPS`**, no decimation; grep finds no other gyro reference, so it is configured but never read). The current ±245 dps setting would clip essentially every fall (100% of WEDA falls exceed 250 dps), so v3 needs FS raised to 2000 dps (sensitivity falls from 8.75 to 70 mdps/LSB — datasheet values, unverified here), the gyro ODR set to 26 Hz, and a read path that delivers sample-aligned |ω| and |a| (whether the two sensors share an ODR clock at equal rates is **not verified here**). The six gyro features are norms and angle sums, hence invariant to sensor orientation (checked in `test_gyro_features.py`) — no axis calibration is needed.
+- **Firmware impact of adding the gyro (not implemented):** `imu.c` already configures the gyro (`.gyro_odr = LSM6DSXX_DATA_RATE_52HZ`, **`.gyro_fs = LSM6DSXX_GYRO_FS_245DPS`**, no decimation; grep finds no other gyro reference, so it is configured but never read). The current ±245 dps setting would clip essentially every fall (100% of WEDA falls exceed 250 dps), so v3 needs FS raised to 2000 dps (sensitivity falls from 8.75 to 70 mdps/LSB — datasheet values, unverified here), the gyro ODR set to 26 Hz, and a read path that delivers sample-aligned |ω| and |a| (whether the two sensors share an ODR clock at equal rates is **not verified here**). The six gyro features are norms and angle sums, hence invariant to sensor orientation (checked in `test_gyro_features.py`) — no axis calibration is needed.
 
 ### 6.4 Summary: accelerometer-only vs accelerometer + gyro at each recall target
 
@@ -422,47 +495,85 @@ Cells: fall recall / ADL false alarms per trial / alarmed ADL trials per hour (p
 | 95 % | WEDA only (native ±2000 dps) | 95.4% / 16.2% / 44.4 | 95.4% / 14.1% / 38.7 | 95.1% / 13.9% / 38.2 | 95.7% / 23.7% / 65.3 |
 | 95 % | pooled, harmonised ±125 dps | 94.7% / 31.3% / 96.9 | 94.5% / 32.1% / 99.3 | 94.6% / 31.8% / 98.3 | 95.6% / 32.2% / 99.7 |
 
-### 6.5 Recommendation (for your decision — nothing exported or implemented beyond what is listed)
+### 6.5 Decision taken: acc9 LR, 90 % target; gyro deferred
 
-**Feature set: keep the 9 accelerometer features (LR @ 26 Hz).** With a gyro that does not clip (WEDA, native range) the 6 added features lower ADL false alarms per trial by 2.4 pp at the 90 % target (paired CI [-4.4, -0.6] pp; 2.1 pp at 95 %, [-3.9, -0.3]) at unchanged recall — a 13–23 % relative reduction, with the paired CI excluding zero at the 85, 90, 95 % targets. In the pooled, ±125 dps-harmonised population the same features change nothing measurable (-0.4 pp at 90 %, [-1.7, +0.9]; +0.8 pp at 95 %, [-1.2, +2.7]). The L1 step does not find a smaller useful set (it keeps 13–15 of the 15 features in the WEDA run and 9–14 in the pooled run, with no accuracy difference to (ii)), and the depth-5 tree is worse than LR and cannot reach the 80–90 % targets in the WEDA run because its probabilities are coarse. The gain exists only if the gyro runs at ±2000 dps (the firmware is currently configured for ±245 dps, which clips every fall), needs a read path and a power budget I could not verify, and I could not test it on a second dataset with an unclipped gyro (BITS is on hold). I would therefore **not** add the gyro to the first firmware, and revisit it when you have your own recordings with a ±2000 dps gyro: the question to answer there is whether the ≈2 pp trial-level false-alarm reduction survives.
+**Feature set (adopted): the 9 accelerometer features, LR @ 26 Hz.** Gyro ablation summary: *small significant gain only with an unclipped gyro; deferred for power / full scale.* With a gyro that does not clip (WEDA, native range) the 6 added features lower ADL false alarms per trial by 2.4 pp at the 90 % target (paired CI [-4.4, -0.6] pp; 2.1 pp at 95 %, [-3.9, -0.3]) at unchanged recall — a 13–23 % relative reduction, with the paired CI excluding zero at the 85, 90, 95 % targets. In the pooled, ±125 dps-harmonised population the same features change nothing measurable (-0.4 pp at 90 %, [-1.7, +0.9]; +0.8 pp at 95 %, [-1.2, +2.7]). The L1 step does not find a smaller useful set (it keeps 13–15 of the 15 features in the WEDA run and 9–14 in the pooled run, with no accuracy difference to (ii)), and the depth-5 tree is worse than LR and cannot reach the 80–90 % targets in the WEDA run because its probabilities are coarse. The gain exists only if the gyro runs at ±2000 dps (the firmware is currently configured for ±245 dps, which clips every fall), needs a read path and a power budget I could not verify, and I could not test it on a second dataset with an unclipped gyro (BITS is on hold). I would therefore **not** add the gyro to the first firmware, and revisit it when you have your own recordings with a ±2000 dps gyro: the question to answer there is whether the ≈2 pp trial-level false-alarm reduction survives.
 
-**Operating point: the 90 % recall target.** Pooled 5-fold CV threshold of the final model: **0.835** (per outer fold 0.84, 0.84, 0.78, 0.84, 0.83); cross-validated recall 90.1 % [85.4, 94.3], ADL false alarms per trial 23.3 % [19.7, 27.2]. Going from 90 % to 95 % recall raises the false-alarm rate from 23.3 % to 34.2 % per trial (alarmed ADL trials per hour 74 → 109), while 85 % → 90 % costs only 3.7 pp — the knee of the curve is at 85–90 %. The thresholds for all four targets are stored in `results/final_model.json` (80 %: 0.934, 85 %: 0.897, 90 %: 0.835, 95 %: 0.671). Two cautions: (a) the *current exported header still carries the 95 % point (0.671)*; regenerate with `src/export_final.py --op trig90` once you choose, then re-run `src/parity.py`; (b) one pooled threshold hides large dataset differences — at 90 % it gives WEDA 100 % recall with 43 % ADL false alarms per trial but SmartFallMM 85 % recall with 16 % (table in §4) — and the ADL trials of both datasets are curated, vigorous activities (jogging, hand hits, stumbles, jumps), so the per-hour figures are an upper-bound stress test, not a daily-life false-alarm rate. Calibrate the final threshold on your own recordings.
+**Operating point (adopted): the 90 % recall target.** Pooled 5-fold CV threshold of the final model: **0.835** (per outer fold 0.84, 0.84, 0.78, 0.84, 0.83); cross-validated recall 90.1 % [85.4, 94.3], ADL false alarms per trial 23.3 % [19.7, 27.2]. Going from 90 % to 95 % recall raises the false-alarm rate from 23.3 % to 34.2 % per trial (alarmed ADL trials per hour 74 → 109), while 85 % → 90 % costs only 3.7 pp — the knee of the curve is at 85–90 %. The thresholds for all four targets are stored in `results/final_model.json` (80 %: 0.934, 85 %: 0.897, 90 %: 0.835, 95 %: 0.671). Two cautions: (a) the header was regenerated at this point (`src/export_final.py --op trig90`, parity PASS); (b) one pooled threshold hides large dataset differences — at 90 % it gives WEDA 100 % recall with 43 % ADL false alarms per trial but SmartFallMM 85 % recall with 16 % (table in §4) — and the ADL trials of both datasets are curated, vigorous activities (jogging, hand hits, stumbles, jumps), so the per-hour figures are an upper-bound stress test, not a daily-life false-alarm rate. Calibrate the final threshold on your own recordings.
 
-## 7. Model comparison (offline; LR is the deploy candidate; trigger-only threshold tuned for 95 % recall)
+## 7. Model comparison at the chosen operating point (offline; LR is the deploy candidate)
 
-| model | trigger recall (mode B) | ADL trigger-only FAR | recall with confirm (coverage) | parameters | classifier flash, bytes (measured) | + shared feature code | total flash |
+Same nested CV and 90 % recall target for every row (thresholds tuned per outer fold; recall lands near the target by construction). Flash = `arm-none-eabi-gcc -Os -mcpu=cortex-m4 -mfloat-abi=hard` object text+rodata of the final pool-trained model (libm excluded).
+
+| model | fall recall (trigger) | ADL false alarms per trial | alarmed ADL trials per hour | parameters | classifier flash (B, measured) | + feature code | total flash (B) |
 |---|---|---|---|---|---|---|---|
-| LR @ 26 Hz | 95.0% [91.8, 97.7] (989/1041) | 34.2% [29.9, 38.5] (818/2393) | 40.2% [26.9, 53.8] (280/696); cov. 696/1041 | 28 (28 floats = 112 B) | 324 | 720 | 1044 |
-| Decision tree (depth ≤ 5) @ 26 Hz | 94.6% [91.4, 97.4] (985/1041) | 30.2% [26.5, 34.3] (722/2393) | 40.4% [27.2, 53.7] (281/696); cov. 696/1041 | 61 (tree nodes) | 816 | 720 | 1536 |
-| MLP (1×16) @ 26 Hz | 95.3% [92.2, 97.8] (992/1041) | 27.4% [23.5, 31.6] (655/2393) | 39.7% [26.5, 53.1] (276/696); cov. 696/1041 | 195 (floats) | 944 | 720 | 1664 |
-| LR @ 52 Hz | 95.6% [92.9, 97.8] (995/1041) | 36.5% [32.4, 41.0] (873/2393) | 39.6% [26.1, 53.2] (275/695); cov. 695/1041 | 28 | same code as LR@26 | – | – |
+| **LR @ 26 Hz (chosen)** | 90.1% [85.4, 94.3] (938/1041) | 23.3% [19.7, 27.2] (557/2393) | 74.1 [64.5, 84.2] | 28 | 324 | 720 | 1044 |
+| LR @ 52 Hz | 91.1% [86.3, 95.0] (948/1041) | 26.5% [22.8, 30.7] (634/2393) | 84.4 [73.6, 95.5] | 28 | same code | – | – |
+| Decision tree depth 5 @ 26 Hz | 91.6% [87.7, 95.0] (954/1041) | 25.7% [22.3, 29.7] (616/2393) | 81.9 [71.7, 92.8] | 61 | 816 | 720 | 1536 |
+| MLP 1×16 @ 26 Hz | 90.9% [86.4, 94.9] (946/1041) | 21.4% [17.8, 25.3] (511/2393) | 67.9 [57.3, 78.8] | 195 | 944 | 720 | 1664 |
 
-Flash = `arm-none-eabi-gcc -Os -mcpu=cortex-m4 -mfloat-abi=hard` object text+rodata for the final pool-trained model (tree: depth 5, 31 leaves; MLP: 9→16→1 ReLU/sigmoid), libm excluded. Subject-bootstrap CIs of the three models overlap on every metric (no paired test was run); LR is the cheapest in flash and the only one the firmware already supports.
+Subject-bootstrap CIs overlap across models (no paired test for these rows); LR is the cheapest in flash and the only one the firmware already supports.
 
 ## 8. Waist → wrist domain gap
 
-| model | recall trigger-only | ADL trigger-only FAR | recall with confirm (eligible; coverage) | ADL confirmed FAR |
+| model (set) | fall recall (trigger) | ADL false alarms per trial | alarmed ADL trials per ADL hour |
+|---|---|---|---|
+| SisFall-waist LR, unchanged, 52 Hz, own threshold 0.93 (WEDA + SmartFallMM pool) | 79.1% [72.9, 85.6] (823/1041) | 31.6% [28.4, 35.1] (757/2393) | 100.7 [91.1, 110.4] |
+| Wrist LR @ 26 Hz, chosen point (CV, same pool) | 90.1% [85.4, 94.3] (938/1041) | 23.3% [19.7, 27.2] (557/2393) | 74.1 [64.5, 84.2] |
+| Wrist LR @ 26 Hz, chosen point (BITS single run) | 81.0% [76.1, 85.4] (265/327) | 19.3% [16.1, 22.8] (112/581) | 22.3 [18.4, 27.1] |
+
+The waist model transfers poorly to the wrist — at its own fixed threshold it detects 79 % of wrist falls while still alarming on about a third of ADL trials; the retrained wrist LR reaches 90 % recall at a lower false-alarm rate. The baseline was not run on BITS (BITS was used once, for the final model only). The comparison is not threshold-matched.
+
+
+## 9. BITS wrist IMU+HR (ages 20–47) — single held-out run (done)
+
+Run once with `src/eval_bits.py --op trig90 --rule5 skip` (lock file `results/bits_run.lock` now blocks a second run); nothing was retuned afterwards. The model, threshold (0.835), features and 26 Hz resampling were fixed before the run.
+
+- Files: 984 → rule 4 (rest |a| of `acg` within 1 ± 0.1 g) drops 72 ADL files (0 falls) → 912; rule 5 (timestamp span) skipped by decision; 4 further files are shorter than one 2 s window at 26 Hz → **327 falls and 581 ADL trials** from 41 subjects, ADL time 5.03 h *if 20 Hz*.
+- **Assumption:** 20 Hz by sample order (timestamps carry 3 significant digits, so the rate and regularity cannot be verified; the HR-block cross-check gives a median of 20.2 accelerometer samples per HR row but with a wide spread). If the true rate differed, the 26 Hz resampling would stretch time and every time-based feature with it.
+- Ages 20–47 (dataset paper, read by a sub-agent from PMC10709028 and not independently re-verified); acceleration = tag `acg` (gravity included; the paper's prose describes the tags the other way round, the data decided).
+
+| set | fall recall (trigger) | ADL false alarms **per trial** | alarmed ADL trials **per ADL hour** | alarm events **per ADL hour** |
 |---|---|---|---|---|
-| SisFall-waist LR, unchanged, 52 Hz (thr 0.93) | 79.1% [72.9, 85.6] (823/1041) | 31.6% [28.4, 35.1] (757/2393) | 27.9% [16.0, 40.8] (194/695); 695/1041 | 1.5% [0.6, 2.6] (35/2393) |
-| Wrist LR @ 52 Hz (mode B) | 95.6% [92.9, 97.8] (995/1041) | 36.5% [32.4, 41.0] (873/2393) | 39.6% [26.1, 53.2] (275/695); 695/1041 | 3.6% [2.1, 5.3] (85/2393) |
-| Wrist LR @ 26 Hz (mode B) | 95.0% [91.8, 97.7] (989/1041) | 34.2% [29.9, 38.5] (818/2393) | 40.2% [26.9, 53.8] (280/696); 696/1041 | 3.6% [2.2, 5.4] (87/2393) |
+| CV pooled (WEDA + SmartFallMM) | 90.1% [85.4, 94.3] (938/1041) | 23.3% [19.7, 27.2] (557/2393) | 74.1 [64.5, 84.2] | 84.2 [73.5, 95.6] |
+| CV WEDA only | 100.0% [100.0, 100.0] (350/350) | 43.3% [36.9, 48.9] (268/619) | 119.1 [104.6, 131.8] | 128.0 [112.0, 142.9] |
+| CV SmartFallMM only | 85.1% [79.1, 90.2] (588/691) | 16.3% [13.9, 18.7] (289/1774) | 54.8 [46.8, 63.8] | 65.5 [55.8, 75.4] |
+| **BITS wrist IMU+HR (ages 20–47), single held-out run, thr 0.835** | 81.0% [76.1, 85.4] (265/327) | 19.3% [16.1, 22.8] (112/581) | 22.3 [18.4, 27.1] | 37.6 [29.9, 47.0] |
 
-The waist model transfers poorly: at its own fixed threshold it detects the minority of wrist falls while still triggering on about a third of ADL trials. The comparison is not threshold-matched (the baseline is unchanged by construction); the wrist LR at its tuned threshold reaches 95 % trigger-only recall at a similar ADL trigger-only false-alarm rate.
+Per fall type (the index → activity mapping is **inferred**: each user has exactly one file per paper activity, and per-index motion energy follows the paper's table; the paper does not document the file naming):
 
-## 9. BITS wrist IMU+HR (ages 20–47) held-out run — ON HOLD
+| fall | trials | recall (95 % CI over subjects) |
+|---|---|---|
+| fall1 forward fall landing on knee | 41 | 78.0% [63.4, 90.2] (32/41) |
+| fall2 right fall | 41 | 75.6% [63.4, 87.8] (31/41) |
+| fall3 left fall | 41 | 90.2% [80.5, 97.6] (37/41) |
+| fall4 forward fall | 41 | 97.6% [92.7, 100.0] (40/41) |
+| fall5 seated on bed, falling to ground | 41 | 68.3% [53.7, 80.5] (28/41) |
+| fall6 forward fall, body weight on hand | 41 | 92.7% [82.9, 100.0] (38/41) |
+| fall7 backward fall from seated | 41 | 48.8% [34.1, 63.4] (20/41) |
+| fall8 grabbing while falling | 40 | 97.5% [92.1, 100.0] (39/40) |
 
-- Preprocessed (`acg`, g, 20→26 Hz and 20→52 Hz) and filtered by the pre-specified rules; no model has seen it.
-- Rule 4 (rest |a| of `acg` within 1 ± 0.1 g): 72 of 984 files dropped (0 falls, 72 ADL) → 912 files remain (328 falls, 584 ADL).
-- Rule 5 (|timestamp span − N/20| > 10 % ⇒ drop) is **skipped by decision**: it would have dropped 900 of 912 files (falls 322 of 328) because the timestamps keep only 3 significant digits. **Assumption: 20 Hz by sample order.**
-- Index → activity: not documented in the paper's text; per-index energy follows the paper's table (jogging/jumping highest, lying lowest, seated falls gentlest), so per-fall-type recall can be computed with an *inferred* mapping once the run is released (`DATA_CARD.md` §6).
-- Caveat that will accompany the result: 20 Hz is assumed by sample order; the HR-block cross-check (median 20.2 samples per HR row, IQR 7–51) is consistent at the median only.
+The two seated falls (fall5, fall7) are the weakest, backward-fall-from-seated most of all.
+
+ADL false-alarm breakdown, top 5 activities (trigger-only; BITS paper activity names, inferred mapping):
+
+| activity | alarmed / trials | false-alarm rate per trial | alarmed trials per hour of that activity | share of all false alarms |
+|---|---|---|---|---|
+| adl4 jumping | 20/24 | 83% | 78 | 18% |
+| adl3 jogging | 18/21 | 86% | 42 | 16% |
+| adl15 lying on back, getting up normally | 13/41 | 32% | 45 | 12% |
+| adl5 climbing up slowly | 13/41 | 32% | 29 | 12% |
+| adl12 swinging hands | 12/32 | 38% | 42 | 11% |
+
 
 ## 10. Export and C parity
 
-`include/fall_model.h` and `include/test_windows.h` (12 real train-pool windows + 6 stillness segments for the long-lie placeholder, taken from WEDA-FALL only because SmartFallMM is all-rights-reserved, with expected features, probabilities and decisions; every float literal is positional with a decimal point before `f`). `firmware/fall_imu/include/` was not modified. Header fixes vs the reference exporter: all rate macros incl. TILT_PRE/POST/FALLBACK, POST_STD and `MODEL_IMU_ODR_ENUM = LSM6DSXX_DATA_RATE_26HZ` (imu.c already selects 26 Hz from `SAMPLE_RATE_HZ`); the (placeholder, long-lie) stillness thresholds are emitted as the macros `FALL_STILL_STD_THR / FALL_STILL_MEAN_TOL` — the reference header's `static const STILL_STD_THR` is never read by `fall_features.h`, so a tuned std would have been ignored on the device.
+**Firmware installation (not flashed):** the final `fall_model.h` / `test_windows.h` are installed in `firmware/fall_imu/include/` (identical to `ml/fall-detection-wrist/include/`). ODR check: gcc -E on imu.c's own '#if SAMPLE_RATE_HZ' chain with the new fall_model.h gives IMU_ODR_ENUM = LSM6DSXX_DATA_RATE_26HZ (SAMPLE_RATE_HZ 26; MODEL_IMU_ODR_ENUM / ODR_XL bits 0x2 also in the header). Build: make in firmware/fall_imu (BOARD seeedstudio-xiao-nrf52840-sense, RIOT at ~/riotproject): success; arm-none-eabi-size text 48280, data 160, bss 20064. Host tests: gcc -I firmware/fall_imu/include host/host_test.c: RESULT: ALL PASS (12 windows, 6 still segments); same pipeline.c + replay_seq.h as the board, built with the new headers: RESULT: ALL PASS.
+
+`include/fall_model.h` and `include/test_windows.h` (12 real train-pool windows + 6 stillness segments for the long-lie placeholder, taken from WEDA-FALL only because SmartFallMM is all-rights-reserved, with expected features, probabilities and decisions; every float literal is positional with a decimal point before `f`). Header fixes vs the reference exporter: all rate macros incl. TILT_PRE/POST/FALLBACK, POST_STD and `MODEL_IMU_ODR_ENUM = LSM6DSXX_DATA_RATE_26HZ` (imu.c already selects 26 Hz from `SAMPLE_RATE_HZ`); the (placeholder, long-lie) stillness thresholds are emitted as the macros `FALL_STILL_STD_THR / FALL_STILL_MEAN_TOL` — the reference header's `static const STILL_STD_THR` is never read by `fall_features.h`, so a tuned std would have been ignored on the device.
 
 
-Firmware `fall_features.h` sha256[:16] `9ec8875932bda914` (copied unmodified to a build dir; firmware include dir untouched). Exported operating point: mode `trig`, thr 0.671, std 0.08, tol 0.2 (provisional=True).
+Firmware `fall_features.h` sha256[:16] `9ec8875932bda914` (`fall_features.h` itself is unmodified; it is copied byte-identically to a build dir so that its quoted include picks up the new `fall_model.h`). Exported operating point: mode `trig90`, thr 0.835, std 0.08, tol 0.2 (provisional=False).
 
 - `host_test.c` built with gcc against the new headers: compile rc=0; run rc=0; last lines:
 
@@ -488,7 +599,7 @@ RESULT: ALL PASS (12 windows, 6 still segments)
 | tilt_deg | 6.98e-05 | 2.50e-05 | 0 |
 
 - probability: max |C − Python| = 3.77e-07
-- trigger decisions at the exported threshold 0.671: **0 mismatches** of 1000 (249 triggers; 0 windows within 1e-4 of the threshold)
+- trigger decisions at the exported threshold 0.835: **0 mismatches** of 1000 (203 triggers; 1 windows within 1e-4 of the threshold)
 - same comparison at other thresholds: 0.003: 0 mismatches (980 triggers); 0.5: 0 mismatches (292 triggers); 0.671: 0 mismatches (249 triggers); 0.93: 0 mismatches (164 triggers)
 - stillness decisions on 1000 random 3 s segments (std<0.08, |mean−1|<0.2): **0 mismatches** (131 still)
 
@@ -497,7 +608,7 @@ RESULT: ALL PASS (12 windows, 6 still segments)
 
 ## 11. Caveats
 
-- The recall target (operating point) is still to be chosen (§6.5); the exported threshold is the 95 % point and the stillness parameters are long-lie placeholders.
+- The operating point (90 % recall, thr 0.835) is a cross-validated choice on simulated-fall data; it must be recalibrated on own-device data. The long-lie placeholders (std 0.08, tol 0.2, 3 s) are unvalidated.
 - SmartFallMM falls are manually cropped and short: only a subset is confirm-eligible, and the post-fall segment length is determined by the crop, not by the person; WEDA falls were done on a mattress by young participants.
 - ADL false-alarm rates are per trial of very different lengths (WEDA/SFMM trials from seconds to minutes) — compare with the per-hour columns.
 - Subject-level CIs are wide for per-fall-type and young/old splits (few subjects); elderly data come from ADL only (WEDA 11, SmartFallMM old folder 24 subjects), so elderly *fall* detection is untested.
@@ -507,12 +618,20 @@ RESULT: ALL PASS (12 windows, 6 still segments)
 
 ```
 cd ml/fall-detection-wrist && python3 -m venv .venv && .venv/bin/pip install numpy scipy pandas scikit-learn
-.venv/bin/python -I src/data_card.py && .venv/bin/python -I src/preprocess.py && .venv/bin/python -I src/exclusion_log.py
-.venv/bin/python -I src/test_preprocess.py && .venv/bin/python -I src/test_features.py && .venv/bin/python -I src/rate_leak_check.py
-.venv/bin/python -I src/build_dataset.py
-for m in 'lr 26' 'lr 52' 'tree 26' 'mlp 26'; do set -- $m; for g in spec trig ext; do .venv/bin/python -I src/eval_nested.py --model $1 --fs $2 --grid $g; done; done   # resumable per fold
-.venv/bin/python -I src/eval_baseline.py && .venv/bin/python -I src/final_model.py && .venv/bin/python -I src/export_final.py
-.venv/bin/python -I src/parity.py && .venv/bin/python -I src/flash_size.py && .venv/bin/python -I src/make_report.py
+.venv/bin/python -I src/data_card.py && .venv/bin/python -I src/preprocess.py && .venv/bin/python -I src/exclusion_log.py && .venv/bin/python -I src/gyro_card.py
+.venv/bin/python -I src/test_preprocess.py && .venv/bin/python -I src/test_features.py && .venv/bin/python -I src/test_gyro_features.py && .venv/bin/python -I src/rate_leak_check.py
+.venv/bin/python -I src/build_dataset.py && .venv/bin/python -I src/build_dataset.py v3
+# operating curves (resumable per fold)
+.venv/bin/python -I src/eval_curve.py --ds pool26 --models acc9_lr acc9_tree acc9_mlp && .venv/bin/python -I src/eval_curve.py --ds pool52 --models acc9_lr
+.venv/bin/python -I src/eval_curve.py --ds v3W --models acc9_lr gyro15_lr l1sel_lr gyro15_tree && .venv/bin/python -I src/eval_curve.py --ds v3P --models acc9_lr gyro15_lr l1sel_lr gyro15_tree
+.venv/bin/python -I src/eval_baseline.py && .venv/bin/python -I src/stillness_finding.py
+.venv/bin/python -I src/final_model.py && .venv/bin/python -I src/export_final.py --op trig90 && .venv/bin/python -I src/parity.py
+.venv/bin/python -I src/flash_size.py && .venv/bin/python -I src/ram_size.py
+# single held-out BITS run (refuses to run twice: results/bits_run.lock)
+.venv/bin/python -I src/eval_bits.py --op trig90 --rule5 skip --i-understand-this-is-the-single-run
+# (earlier confirm-stage appendix: src/eval_nested.py --model {lr,tree,mlp} --fs {26,52} --grid {spec,trig,ext})
+.venv/bin/python -I src/make_report.py
+# firmware: cp include/fall_model.h include/test_windows.h ../../firmware/fall_imu/include/ ; make -C ../../firmware/fall_imu ; gcc -I ../../firmware/fall_imu/include ../../firmware/fall_imu/host/host_test.c -lm
 ```
 
 ## Appendix A — superseded: confirm-stage results on the train pool (nested, subject-grouped 5-fold CV)

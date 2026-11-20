@@ -35,7 +35,7 @@ CF = os.path.join(CACHE, "curve")
 os.makedirs(CF, exist_ok=True)
 TARGETS = (0.80, 0.85, 0.90, 0.95)
 C_GRID = (0.003, 0.01, 0.03, 0.1, 1.0)
-DSFILE = {"pool26": "ds_26.pkl", "v3W": "ds_v3W_26.pkl", "v3P": "ds_v3P_26.pkl"}
+DSFILE = {"pool26": "ds_26.pkl", "pool52": "ds_52.pkl", "v3W": "ds_v3W_26.pkl", "v3P": "ds_v3P_26.pkl"}
 NAMES = {**{"F%02d" % i: n for i, n in enumerate(["fwd fall walking (slip)", "lateral fall walking (slip)", "back fall walking (slip)", "fwd fall walking (trip)",
                                                   "back fall trying to sit", "fwd fall sitting (faint)", "back fall sitting (faint)", "lateral fall sitting (faint)"], 1)},
          "D01": "walking", "D02": "jogging", "D03": "stairs up/down", "D04": "sit-wait-stand", "D05": "sit, try to rise, collapse into chair",
@@ -59,6 +59,21 @@ class Plain:
     def proba(self, X):
         X = X[:, self.cols]
         return self.clf.predict_proba(self.scaler.transform(X) if self.scaler else X)[:, 1]
+
+
+class Wrap:
+    """eval_nested.Model (lr / tree / mlp, balanced) on a column subset."""
+
+    def __init__(self, kind, cols):
+        from eval_nested import Model
+        self.cols, self.m = list(cols), Model(kind)
+
+    def fit(self, X, y):
+        self.m.fit(X[:, self.cols], y)
+        return self
+
+    def proba(self, X):
+        return self.m.proba(X[:, self.cols])
 
 
 class L1Sel:
@@ -128,6 +143,8 @@ def model_factories(spec, nfeat):
         return {None: lambda: Plain("lr", allc)}
     if spec == "gyro15_tree":
         return {None: lambda: Plain("tree", allc)}
+    if spec == "acc9_mlp":
+        return {None: lambda: Wrap("mlp", acc)}
     if spec == "acc9_tree":
         return {None: lambda: Plain("tree", acc)}
     if spec == "l1sel_lr":

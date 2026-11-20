@@ -36,7 +36,7 @@ for ds, lab in (("v3W", "6.1 WEDA only, native gyro range"), ("v3P", "6.2 Pooled
     A(R3.l1_table(ds) + "\n")
     A("ADL false-alarm breakdown (top 5 per dataset) at the 90 % and 95 % targets, acc9 vs acc9 + gyro:\n")
     A(R3.breakdown_md(ds, "acc9_lr") + "\n" + R3.breakdown_md(ds, "gyro15_lr") + "\n")
-A("### 6.3 Firmware feasibility notes (no firmware or C code changed)\n")
+A("### 6.3 Firmware feasibility notes (analysis-time findings; gyro not implemented)\n")
 A(R3.gyro_fs_md() + "\n")
 A("### 6.4 Summary: accelerometer-only vs accelerometer + gyro at each recall target\n")
 A("Cells: fall recall / ADL false alarms per trial / alarmed ADL trials per hour (point estimates; CIs in the tables above).\n")

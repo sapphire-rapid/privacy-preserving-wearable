@@ -1,6 +1,6 @@
 # C parity (Step 6)
 
-Firmware `fall_features.h` sha256[:16] `9ec8875932bda914` (copied unmodified to a build dir; firmware include dir untouched). Exported operating point: mode `trig90`, thr 0.835, std 0.08, tol 0.2 (provisional=False).
+Firmware `fall_features.h` sha256[:16] `9ec8875932bda914` (`fall_features.h` itself is unmodified; it is copied byte-identically to a build dir so that its quoted include picks up the new `fall_model.h`). Exported operating point: mode `trig90`, thr 0.835, std 0.08, tol 0.2 (provisional=False).
 
 - `host_test.c` built with gcc against the new headers: compile rc=0; run rc=0; last lines:
 
