@@ -118,10 +118,15 @@ void mode_timing(void)
 
 static fall_pipe_t _pipe;
 
+static const char *const _feat_name[N_FEATURES] = {
+    "max_mag", "min_mag", "mean_mag", "std_mag", "range_mag",
+    "max_jerk", "std_mag_post", "count_low", "tilt_deg"
+};
+
 void mode_live(void)
 {
     puts("### START l");
-    printf("LIVE model: rate=%d win=%d stride=%d confirm=%d thr=%.2f odr_hz=%u\n",
+    printf("LIVE model: rate=%d win=%d stride=%d confirm=%d thr=%.3f odr_hz=%u\n",
            SAMPLE_RATE_HZ, WIN_SAMPLES, STRIDE_SAMPLES, CONFIRM_SAMPLES,
            (double)FALL_PROB_THR, imu_odr_hz());
     FLUSH();
@@ -164,6 +169,12 @@ void mode_live(void)
             n_trig++;
             printf("EVT TRIGGER up_ms=%lu n=%lu wi=%lu p=%.6f\n", up,
                    (unsigned long)_pipe.n, (unsigned long)ev.wi, (double)ev.prob);
+            /* the 9 features of the triggering window (log only) */
+            printf("EVT TRIGGER_FEAT up_ms=%lu wi=%lu", up, (unsigned long)ev.wi);
+            for (int j = 0; j < N_FEATURES; j++) {
+                printf(" %s=%.6g", _feat_name[j], (double)ev.feat[j]);
+            }
+            putchar('\n');
         }
         if (ev.pend_overflow) {
             puts("EVT ERROR pending list overflow");

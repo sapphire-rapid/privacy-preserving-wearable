@@ -117,10 +117,11 @@ static void _info(void)
            SAMPLE_RATE_HZ, WIN_SAMPLES, STRIDE_SAMPLES, CONFIRM_SAMPLES,
            TILT_PRE_SAMPLES, TILT_POST_SAMPLES, TILT_FALLBACK_SAMPLES,
            POST_STD_SAMPLES, N_FEATURES);
-    printf("INFO model FALL_PROB_THR=%.4f STILL_STD_THR=%.4f STILL_MEAN_TOL=%.4f "
-           "FALL_STILL_STD_THR=%.4f FALL_STILL_MEAN_TOL=%.4f\n",
-           (double)FALL_PROB_THR, (double)STILL_STD_THR, (double)STILL_MEAN_TOL,
-           (double)FALL_STILL_STD_THR, (double)FALL_STILL_MEAN_TOL);
+    printf("INFO model FALL_PROB_THR=%.4f (fall trigger, 90%% recall target, CV-tuned)\n", (double)FALL_PROB_THR);
+    printf("INFO model long-lie PLACEHOLDERS (not validated, not part of fall detection): STILL_STD_THR=%.4f STILL_MEAN_TOL=%.4f "
+           "FALL_STILL_STD_THR=%.4f FALL_STILL_MEAN_TOL=%.4f CONFIRM_SAMPLES=%d\n",
+           (double)STILL_STD_THR, (double)STILL_MEAN_TOL,
+           (double)FALL_STILL_STD_THR, (double)FALL_STILL_MEAN_TOL, CONFIRM_SAMPLES);
 
     unsigned long text = (unsigned long)(&_etext - &_sfixed);
     unsigned long data = (unsigned long)(&_erelocate - &_srelocate);

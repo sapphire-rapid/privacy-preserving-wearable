@@ -56,7 +56,7 @@ static void _tprint(const char *what, const _tstat_t *t)
 void mode_selftest(void)
 {
     puts("### START s");
-    printf("SELFTEST windows=%d still_segments=%d feat_rel_tol=%.0e thr=%.2f\n",
+    printf("SELFTEST windows=%d still_segments=%d feat_rel_tol=%.0e thr=%.3f\n",
            N_TEST_WINDOWS, N_STILL_SEGMENTS, (double)SELFTEST_FEAT_REL,
            (double)FALL_PROB_THR);
     FLUSH();
@@ -148,7 +148,7 @@ void mode_replay(void)
 {
     puts("### START r");
     const uint32_t period_us = 1000000u / SAMPLE_RATE_HZ;
-    printf("REPLAY sequences=%d period_us=%lu rate=%d win=%d stride=%d confirm=%d thr=%.2f\n",
+    printf("REPLAY sequences=%d period_us=%lu rate=%d win=%d stride=%d confirm=%d thr=%.3f\n",
            REPLAY_N_SEQ, (unsigned long)period_us, SAMPLE_RATE_HZ, WIN_SAMPLES,
            STRIDE_SAMPLES, CONFIRM_SAMPLES, (double)FALL_PROB_THR);
     FLUSH();
