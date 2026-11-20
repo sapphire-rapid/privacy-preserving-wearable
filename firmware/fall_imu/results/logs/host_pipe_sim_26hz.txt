@@ -1,0 +1,111 @@
+idx sequence     src n    wins  trig  conf  canc  pending  w0_prob    expect     result
+    ev idx=0 n=52 win TRIGGER p=0.999941
+    ev idx=0 n=65 win TRIGGER p=0.999998
+    ev idx=0 n=78 win TRIGGER p=0.998017
+    ev idx=0 n=91 win p=0.657371
+    ev idx=0 n=104 win p=0.003438
+    ev idx=0 n=117 win p=0.003299
+    ev idx=0 n=130 win p=0.003007 CONFIRMED
+0   fall+still   0   130  7     3     1     0     0        0.999941   CONFIRMED  PASS
+    ev idx=1 n=52 win TRIGGER p=0.998891
+    ev idx=1 n=65 win TRIGGER p=0.999996
+    ev idx=1 n=78 win TRIGGER p=0.999909
+    ev idx=1 n=91 win TRIGGER p=0.989906
+    ev idx=1 n=104 win p=0.008199
+    ev idx=1 n=117 win p=0.003361
+    ev idx=1 n=130 win p=0.003052 CONFIRMED
+1   fall+still   1   130  7     4     1     0     0        0.998891   CONFIRMED  PASS
+    ev idx=2 n=52 win TRIGGER p=0.999916
+    ev idx=2 n=65 win TRIGGER p=0.999998
+    ev idx=2 n=78 win TRIGGER p=0.920806
+    ev idx=2 n=91 win p=0.047791
+    ev idx=2 n=104 win p=0.003676
+    ev idx=2 n=117 win p=0.003105
+    ev idx=2 n=130 win p=0.002990 CONFIRMED
+2   fall+still   2   130  7     3     1     0     0        0.999916   CONFIRMED  PASS
+    ev idx=3 n=52 win TRIGGER p=0.999999
+    ev idx=3 n=65 win TRIGGER p=1.000000
+    ev idx=3 n=78 win p=0.374562
+    ev idx=3 n=91 win p=0.003805
+    ev idx=3 n=104 win p=0.003438
+    ev idx=3 n=117 win p=0.003299
+    ev idx=3 n=130 win p=0.003007 CONFIRMED
+3   fall+still   3   130  7     2     1     0     0        0.999999   CONFIRMED  PASS
+    ev idx=4 n=52 win TRIGGER p=0.999934
+    ev idx=4 n=65 win TRIGGER p=0.999999
+    ev idx=4 n=78 win TRIGGER p=0.947471
+    ev idx=4 n=91 win p=0.020724
+    ev idx=4 n=104 win p=0.008199
+    ev idx=4 n=117 win p=0.003361
+    ev idx=4 n=130 win p=0.003052 CONFIRMED
+4   fall+still   4   130  7     3     1     0     0        0.999934   CONFIRMED  PASS
+    ev idx=5 n=52 win TRIGGER p=0.891124
+    ev idx=5 n=65 win TRIGGER p=0.994917
+    ev idx=5 n=78 win TRIGGER p=0.999420
+    ev idx=5 n=91 win TRIGGER p=0.995467
+    ev idx=5 n=104 win p=0.003676
+    ev idx=5 n=117 win p=0.003105
+    ev idx=5 n=130 win p=0.002990 CONFIRMED
+5   fall+still   5   130  7     4     1     0     0        0.891124   CONFIRMED  PASS
+    ev idx=6 n=52 win TRIGGER p=0.999941
+    ev idx=6 n=65 win TRIGGER p=0.999969
+    ev idx=6 n=78 win p=0.525779
+    ev idx=6 n=91 win p=0.409778
+    ev idx=6 n=104 win p=0.629529
+    ev idx=6 n=117 win TRIGGER p=0.983639
+    ev idx=6 n=130 win TRIGGER p=0.999132 CANCELLED
+6   fall+moving  0   130  7     4     0     1     3        0.999941   CANCELLED  PASS
+    ev idx=7 n=52 win TRIGGER p=0.998891
+    ev idx=7 n=65 win TRIGGER p=0.999957
+    ev idx=7 n=78 win TRIGGER p=0.999988
+    ev idx=7 n=91 win TRIGGER p=0.998664
+    ev idx=7 n=104 win p=0.009770
+    ev idx=7 n=117 win p=0.009505
+    ev idx=7 n=130 win p=0.033334 CANCELLED
+7   fall+moving  1   130  7     4     0     1     3        0.998891   CANCELLED  PASS
+    ev idx=8 n=52 win TRIGGER p=0.999916
+    ev idx=8 n=65 win TRIGGER p=0.999999
+    ev idx=8 n=78 win p=0.594514
+    ev idx=8 n=91 win p=0.074843
+    ev idx=8 n=104 win p=0.113409
+    ev idx=8 n=117 win p=0.679676
+    ev idx=8 n=130 win p=0.404267 CANCELLED
+8   fall+moving  2   130  7     2     0     1     1        0.999916   CANCELLED  PASS
+    ev idx=9 n=52 win TRIGGER p=0.999999
+    ev idx=9 n=65 win TRIGGER p=0.999960
+    ev idx=9 n=78 win p=0.404450
+    ev idx=9 n=91 win p=0.397654
+    ev idx=9 n=104 win p=0.629529
+    ev idx=9 n=117 win TRIGGER p=0.983639
+    ev idx=9 n=130 win TRIGGER p=0.999132 CANCELLED
+9   fall+moving  3   130  7     4     0     1     3        0.999999   CANCELLED  PASS
+    ev idx=10 n=52 win TRIGGER p=0.999934
+    ev idx=10 n=65 win TRIGGER p=0.999990
+    ev idx=10 n=78 win TRIGGER p=0.989611
+    ev idx=10 n=91 win p=0.192853
+    ev idx=10 n=104 win p=0.009770
+    ev idx=10 n=117 win p=0.009505
+    ev idx=10 n=130 win p=0.033334 CANCELLED
+10  fall+moving  4   130  7     3     0     1     2        0.999934   CANCELLED  PASS
+    ev idx=11 n=52 win TRIGGER p=0.891124
+    ev idx=11 n=65 win TRIGGER p=0.988203
+    ev idx=11 n=78 win TRIGGER p=0.998051
+    ev idx=11 n=91 win TRIGGER p=0.990540
+    ev idx=11 n=104 win p=0.113409
+    ev idx=11 n=117 win p=0.679676
+    ev idx=11 n=130 win p=0.404267 CANCELLED
+11  fall+moving  5   130  7     4     0     1     3        0.891124   CANCELLED  PASS
+    ev idx=12 n=52 win p=0.629529
+12  ADL          6   52   1     0     0     0     0        0.629529   no trigger PASS
+    ev idx=13 n=52 win p=0.009770
+13  ADL          7   52   1     0     0     0     0        0.009770   no trigger PASS
+    ev idx=14 n=52 win p=0.026302
+14  ADL          8   52   1     0     0     0     0        0.026302   no trigger PASS
+    ev idx=15 n=52 win p=0.007028
+15  ADL          9   52   1     0     0     0     0        0.007028   no trigger PASS
+    ev idx=16 n=52 win p=0.113409
+16  ADL          10  52   1     0     0     0     0        0.113409   no trigger PASS
+    ev idx=17 n=52 win p=0.029138
+17  ADL          11  52   1     0     0     0     0        0.029138   no trigger PASS
+
+RESULT: ALL PASS

@@ -1,0 +1,21 @@
+2026-11-20T11:28:45.589 | HOST run mode=i timeout=15s stop_after=None
+2026-11-20T11:28:45.593 | HOST opened /dev/ttyACM0
+2026-11-20T11:28:45.595 | (handshake) MENU> t=timing(60s) s=selftest r=replay l=live w=rawlog x=stop i=info
+2026-11-20T11:28:45.595 | (handshake) MENU> t=timing(60s) s=selftest r=replay l=live w=rawlog x=stop i=info
+2026-11-20T11:28:45.595 | HOST menu ready
+2026-11-20T11:28:45.898 | HOST sent 'i'
+2026-11-20T11:28:45.906 | ### START i
+2026-11-20T11:28:45.906 | INFO build=1703861 date="Nov 20 2026 11:28:16" riot=2026.10-devel-414-gfac71
+2026-11-20T11:28:45.906 | INFO up_ms=11022 imu_init_rc=0
+2026-11-20T11:28:45.909 | INFO imu i2c_dev=1 addr=0x6A poll_us=2000
+2026-11-20T11:28:45.909 | INFO imu who_am_i=0x6A ok=1
+2026-11-20T11:28:45.910 | INFO CTRL1_XL(0x10)=0x24  ODR_XL=0x2 (26 Hz)  FS_XL=0x1 (+/-16 g)  LPF1_BW_SEL=0  BW0_XL=0
+2026-11-20T11:28:45.910 | INFO CTRL8_XL(0x17)=0x00  LPF2_XL_EN=0  HPCF_XL=0  HP_SLOPE_XL_EN=0  LOW_PASS_ON_6D=0
+2026-11-20T11:28:45.911 | INFO CTRL2_G(0x11)=0x30 CTRL3_C(0x12)=0x44 CTRL4_C(0x13)=0x00 CTRL6_C(0x15)=0x00
+2026-11-20T11:28:45.911 | INFO sampler i2c=100kHz
+2026-11-20T11:28:45.911 | INFO model SAMPLE_RATE_HZ=26 WIN_SAMPLES=52 STRIDE_SAMPLES=13 CONFIRM_SAMPLES=78 TILT_PRE=13 TILT_POST=13 TILT_FALLBACK=5 POST_STD=26 N_FEATURES=9
+2026-11-20T11:28:45.911 | INFO model FALL_PROB_THR=0.8350 (fall trigger, 90% recall target, CV-tuned)
+2026-11-20T11:28:45.912 | INFO model long-lie PLACEHOLDERS (not validated, not part of fall detection): STILL_STD_THR=0.0800 STILL_MEAN_TOL=0.2000 FALL_STILL_STD_THR=0.0800 FALL_STILL_MEAN_TOL=0.2000 CONFIRM_SAMPLES=78
+2026-11-20T11:28:45.912 | INFO size text=48584 data=160 bss=19552 flash~48744 (linker symbols; see arm-none-eabi-size)
+2026-11-20T11:28:45.912 | ### DONE i
+2026-11-20T11:28:45.912 | HOST end marker=yes resets=0 reopens=0

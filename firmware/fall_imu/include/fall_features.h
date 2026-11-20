@@ -59,15 +59,15 @@ static inline float fall_tilt_deg(const float xyz[][3], int n)
     }
 
     int bstart, blen;
-    if (peak >= 26) {
-        bstart = peak - 26;
-        blen = 26;
+    if (peak >= TILT_PRE_SAMPLES) {
+        bstart = peak - TILT_PRE_SAMPLES;
+        blen = TILT_PRE_SAMPLES;
     }
     else {
         bstart = 0;
-        blen = (n < 10) ? n : 10;
+        blen = (n < TILT_FALLBACK_SAMPLES) ? n : TILT_FALLBACK_SAMPLES;
     }
-    int astart = (n >= 26) ? (n - 26) : 0;
+    int astart = (n >= TILT_POST_SAMPLES) ? (n - TILT_POST_SAMPLES) : 0;
     int alen = n - astart;
 
     float u[3] = { 0.0f, 0.0f, 0.0f };
@@ -132,7 +132,7 @@ static inline void fall_features(const float xyz[][3], int n, float out[N_FEATUR
         if (d > jerk) { jerk = d; }
     }
 
-    int post_n = (n >= 52) ? 52 : n;
+    int post_n = (n >= POST_STD_SAMPLES) ? POST_STD_SAMPLES : n;
     const float *post = &m[n - post_n];
 
     int nlow = 0;

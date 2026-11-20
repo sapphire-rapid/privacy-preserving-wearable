@@ -1,0 +1,9 @@
+{
+  "installed": ["firmware/fall_imu/include/fall_model.h", "firmware/fall_imu/include/test_windows.h"],
+  "identical_to": "ml/fall-detection-wrist/include (checked with cmp)",
+  "odr_check": "gcc -E on imu.c's own '#if SAMPLE_RATE_HZ' chain with the new fall_model.h gives IMU_ODR_ENUM = LSM6DSXX_DATA_RATE_26HZ (SAMPLE_RATE_HZ 26; MODEL_IMU_ODR_ENUM / ODR_XL bits 0x2 also in the header)",
+  "build": "make in firmware/fall_imu (BOARD seeedstudio-xiao-nrf52840-sense, RIOT at ~/riotproject): success; arm-none-eabi-size text 48280, data 160, bss 20064",
+  "host_test": "gcc -I firmware/fall_imu/include host/host_test.c: RESULT: ALL PASS (12 windows, 6 still segments)",
+  "host_pipe_test": "same pipeline.c + replay_seq.h as the board, built with the new headers: RESULT: ALL PASS",
+  "flashed": false
+}

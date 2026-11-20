@@ -1,0 +1,35 @@
+{
+ "features(shared)": {
+  "flash_bytes": 720,
+  "text_incl_rodata": 720,
+  "data": 0,
+  "bss": 0,
+  "n_params": 0
+ },
+ "lr": {
+  "flash_bytes": 324,
+  "text_incl_rodata": 324,
+  "data": 0,
+  "bss": 0,
+  "n_params": 28,
+  "param_bytes_f32": 112
+ },
+ "tree": {
+  "flash_bytes": 816,
+  "text_incl_rodata": 816,
+  "data": 0,
+  "bss": 0,
+  "n_params": 61,
+  "depth": 5,
+  "leaves": 31
+ },
+ "mlp": {
+  "flash_bytes": 944,
+  "text_incl_rodata": 944,
+  "data": 0,
+  "bss": 0,
+  "n_params": 195,
+  "hidden": 16
+ },
+ "note": "arm-none-eabi-gcc -Os -mcpu=cortex-m4 -mfloat-abi=hard object text+data (flash) excluding libm; LR uses the firmware's fall_lr_prob (double exp)."
+}

@@ -1,0 +1,7 @@
+{
+ "op_mode": "trig90",
+ "thr": 0.835,
+ "std": 0.08,
+ "mean_tol": 0.2,
+ "provisional": false
+}

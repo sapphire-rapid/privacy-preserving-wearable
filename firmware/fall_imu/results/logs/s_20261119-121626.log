@@ -1,0 +1,153 @@
+2026-11-19T12:16:26.679 | HOST run mode=s timeout=60s stop_after=None
+2026-11-19T12:16:26.680 | HOST opened /dev/ttyACM0
+2026-11-19T12:16:26.691 | (handshake) MENU> t=timing(60s) s=selftest r=replay l=live w=rawlog x=stop i=info
+2026-11-19T12:16:26.691 | (handshake) MENU> t=timing(60s) s=selftest r=replay l=live w=rawlog x=stop i=info
+2026-11-19T12:16:26.691 | HOST menu ready
+2026-11-19T12:16:26.995 | HOST sent 's'
+2026-11-19T12:16:27.002 | ### START s
+2026-11-19T12:16:27.002 | SELFTEST windows=12 still_segments=6 feat_rel_tol=1e-04 thr=0.93
+2026-11-19T12:16:27.003 | SELFTEST win=0 exp_prob=0.988936663 got_prob=0.988936663 abs_diff=0.00e-308 exp_trig=1 got_trig=1
+2026-11-19T12:16:27.003 | SELFTEST   f0 max_mag      exp=3.02442575 got=3.02442575 rel=0.00e-308 ok
+2026-11-19T12:16:27.004 | SELFTEST   f1 min_mag      exp=0.481374562 got=0.481374562 rel=0.00e-308 ok
+2026-11-19T12:16:27.004 | SELFTEST   f2 mean_mag     exp=1.08451927 got=1.08451915 rel=1.10e-07 ok
+2026-11-19T12:16:27.005 | SELFTEST   f3 std_mag      exp=0.383868814 got=0.383868814 rel=0.00e-308 ok
+2026-11-19T12:16:27.005 | SELFTEST   f4 range_mag    exp=2.54305124 got=2.54305124 rel=0.00e-308 ok
+2026-11-19T12:16:27.006 | SELFTEST   f5 max_jerk     exp=1.15291166 got=1.15291190 rel=2.07e-07 ok
+2026-11-19T12:16:27.006 | SELFTEST   f6 std_mag_post exp=0.0904523360 got=0.0904523360 rel=0.00e-308 ok
+2026-11-19T12:16:27.007 | SELFTEST   f7 count_low    exp=1.00000000 got=1.00000000 rel=0.00e-308 ok
+2026-11-19T12:16:27.007 | SELFTEST   f8 tilt_deg     exp=80.6325912 got=80.6325836 rel=9.46e-08 ok
+2026-11-19T12:16:27.007 | SELFTEST win=0 PASS
+2026-11-19T12:16:27.009 | SELFTEST win=1 exp_prob=0.999958694 got_prob=0.999958694 abs_diff=0.00e-308 exp_trig=1 got_trig=1
+2026-11-19T12:16:27.009 | SELFTEST   f0 max_mag      exp=6.55205679 got=6.55205631 rel=7.28e-08 ok
+2026-11-19T12:16:27.010 | SELFTEST   f1 min_mag      exp=0.200942740 got=0.200942740 rel=0.00e-308 ok
+2026-11-19T12:16:27.010 | SELFTEST   f2 mean_mag     exp=1.07462895 got=1.07462931 rel=3.33e-07 ok
+2026-11-19T12:16:27.010 | SELFTEST   f3 std_mag      exp=0.827807069 got=0.827807069 rel=0.00e-308 ok
+2026-11-19T12:16:27.011 | SELFTEST   f4 range_mag    exp=6.35111380 got=6.35111380 rel=0.00e-308 ok
+2026-11-19T12:16:27.011 | SELFTEST   f5 max_jerk     exp=5.70988894 got=5.70988846 rel=8.35e-08 ok
+2026-11-19T12:16:27.012 | SELFTEST   f6 std_mag_post exp=0.226786017 got=0.226786003 rel=6.57e-08 ok
+2026-11-19T12:16:27.012 | SELFTEST   f7 count_low    exp=7.00000000 got=7.00000000 rel=0.00e-308 ok
+2026-11-19T12:16:27.013 | SELFTEST   f8 tilt_deg     exp=80.0037308 got=80.0037231 rel=9.54e-08 ok
+2026-11-19T12:16:27.013 | SELFTEST win=1 PASS
+2026-11-19T12:16:27.014 | SELFTEST win=2 exp_prob=0.995271564 got_prob=0.995271564 abs_diff=0.00e-308 exp_trig=1 got_trig=1
+2026-11-19T12:16:27.015 | SELFTEST   f0 max_mag      exp=3.66389704 got=3.66389680 rel=6.51e-08 ok
+2026-11-19T12:16:27.015 | SELFTEST   f1 min_mag      exp=0.367821574 got=0.367821604 rel=8.10e-08 ok
+2026-11-19T12:16:27.016 | SELFTEST   f2 mean_mag     exp=1.05239606 got=1.05239606 rel=0.00e-308 ok
+2026-11-19T12:16:27.016 | SELFTEST   f3 std_mag      exp=0.478437304 got=0.478437215 rel=1.87e-07 ok
+2026-11-19T12:16:27.017 | SELFTEST   f4 range_mag    exp=3.29607534 got=3.29607511 rel=7.23e-08 ok
+2026-11-19T12:16:27.018 | SELFTEST   f5 max_jerk     exp=1.57051790 got=1.57051778 rel=7.59e-08 ok
+2026-11-19T12:16:27.018 | SELFTEST   f6 std_mag_post exp=0.125825897 got=0.125825912 rel=1.18e-07 ok
+2026-11-19T12:16:27.018 | SELFTEST   f7 count_low    exp=3.00000000 got=3.00000000 rel=0.00e-308 ok
+2026-11-19T12:16:27.019 | SELFTEST   f8 tilt_deg     exp=73.1591339 got=73.1591263 rel=1.04e-07 ok
+2026-11-19T12:16:27.019 | SELFTEST win=2 PASS
+2026-11-19T12:16:27.020 | SELFTEST win=3 exp_prob=0.987723589 got_prob=0.987723589 abs_diff=0.00e-308 exp_trig=1 got_trig=1
+2026-11-19T12:16:27.021 | SELFTEST   f0 max_mag      exp=3.72010756 got=3.72010756 rel=0.00e-308 ok
+2026-11-19T12:16:27.021 | SELFTEST   f1 min_mag      exp=0.410203636 got=0.410203636 rel=0.00e-308 ok
+2026-11-19T12:16:27.022 | SELFTEST   f2 mean_mag     exp=1.08090389 got=1.08090365 rel=2.21e-07 ok
+2026-11-19T12:16:27.022 | SELFTEST   f3 std_mag      exp=0.460129589 got=0.460129559 rel=6.48e-08 ok
+2026-11-19T12:16:27.023 | SELFTEST   f4 range_mag    exp=3.30990410 got=3.30990386 rel=7.20e-08 ok
+2026-11-19T12:16:27.023 | SELFTEST   f5 max_jerk     exp=2.51440620 got=2.51440620 rel=0.00e-308 ok
+2026-11-19T12:16:27.024 | SELFTEST   f6 std_mag_post exp=0.0598676090 got=0.0598676280 rel=3.11e-07 ok
+2026-11-19T12:16:27.024 | SELFTEST   f7 count_low    exp=2.00000000 got=2.00000000 rel=0.00e-308 ok
+2026-11-19T12:16:27.025 | SELFTEST   f8 tilt_deg     exp=58.2574921 got=58.2574883 rel=6.55e-08 ok
+2026-11-19T12:16:27.025 | SELFTEST win=3 PASS
+2026-11-19T12:16:27.026 | SELFTEST win=4 exp_prob=0.935267866 got_prob=0.935267866 abs_diff=0.00e-308 exp_trig=1 got_trig=1
+2026-11-19T12:16:27.027 | SELFTEST   f0 max_mag      exp=3.65245342 got=3.65245342 rel=0.00e-308 ok
+2026-11-19T12:16:27.027 | SELFTEST   f1 min_mag      exp=0.443370551 got=0.443370521 rel=6.72e-08 ok
+2026-11-19T12:16:27.028 | SELFTEST   f2 mean_mag     exp=1.06290138 got=1.06290162 rel=2.24e-07 ok
+2026-11-19T12:16:27.028 | SELFTEST   f3 std_mag      exp=0.417817235 got=0.417817324 rel=2.14e-07 ok
+2026-11-19T12:16:27.029 | SELFTEST   f4 range_mag    exp=3.20908284 got=3.20908284 rel=0.00e-308 ok
+2026-11-19T12:16:27.029 | SELFTEST   f5 max_jerk     exp=1.31580126 got=1.31580138 rel=9.06e-08 ok
+2026-11-19T12:16:27.030 | SELFTEST   f6 std_mag_post exp=0.129353702 got=0.129353717 rel=1.15e-07 ok
+2026-11-19T12:16:27.030 | SELFTEST   f7 count_low    exp=2.00000000 got=2.00000000 rel=0.00e-308 ok
+2026-11-19T12:16:27.031 | SELFTEST   f8 tilt_deg     exp=41.7252159 got=41.7252197 rel=9.14e-08 ok
+2026-11-19T12:16:27.031 | SELFTEST win=4 PASS
+2026-11-19T12:16:27.032 | SELFTEST win=5 exp_prob=0.999744475 got_prob=0.999744475 abs_diff=0.00e-308 exp_trig=1 got_trig=1
+2026-11-19T12:16:27.033 | SELFTEST   f0 max_mag      exp=6.53688622 got=6.53688669 rel=7.29e-08 ok
+2026-11-19T12:16:27.033 | SELFTEST   f1 min_mag      exp=0.410615861 got=0.410615861 rel=0.00e-308 ok
+2026-11-19T12:16:27.034 | SELFTEST   f2 mean_mag     exp=1.11909318 got=1.11909318 rel=0.00e-308 ok
+2026-11-19T12:16:27.034 | SELFTEST   f3 std_mag      exp=0.815697730 got=0.815697551 rel=2.19e-07 ok
+2026-11-19T12:16:27.035 | SELFTEST   f4 range_mag    exp=6.12627077 got=6.12627077 rel=0.00e-308 ok
+2026-11-19T12:16:27.035 | SELFTEST   f5 max_jerk     exp=3.01705074 got=3.01705122 rel=1.58e-07 ok
+2026-11-19T12:16:27.036 | SELFTEST   f6 std_mag_post exp=0.159391403 got=0.159391403 rel=0.00e-308 ok
+2026-11-19T12:16:27.036 | SELFTEST   f7 count_low    exp=8.00000000 got=8.00000000 rel=0.00e-308 ok
+2026-11-19T12:16:27.037 | SELFTEST   f8 tilt_deg     exp=36.6059761 got=36.6059799 rel=1.04e-07 ok
+2026-11-19T12:16:27.037 | SELFTEST win=5 PASS
+2026-11-19T12:16:27.038 | SELFTEST win=6 exp_prob=0.00185113500 got_prob=0.00185113400 abs_diff=4.66e-10 exp_trig=0 got_trig=0
+2026-11-19T12:16:27.039 | SELFTEST   f0 max_mag      exp=2.95138931 got=2.95138931 rel=0.00e-308 ok
+2026-11-19T12:16:27.039 | SELFTEST   f1 min_mag      exp=0.0596287810 got=0.0596287810 rel=0.00e-308 ok
+2026-11-19T12:16:27.040 | SELFTEST   f2 mean_mag     exp=1.27269244 got=1.27269256 rel=9.37e-08 ok
+2026-11-19T12:16:27.040 | SELFTEST   f3 std_mag      exp=0.766807854 got=0.766807854 rel=0.00e-308 ok
+2026-11-19T12:16:27.041 | SELFTEST   f4 range_mag    exp=2.89176059 got=2.89176059 rel=0.00e-308 ok
+2026-11-19T12:16:27.041 | SELFTEST   f5 max_jerk     exp=1.60472238 got=1.60472238 rel=0.00e-308 ok
+2026-11-19T12:16:27.042 | SELFTEST   f6 std_mag_post exp=0.804095626 got=0.804095626 rel=0.00e-308 ok
+2026-11-19T12:16:27.042 | SELFTEST   f7 count_low    exp=22.0000000 got=22.0000000 rel=0.00e-308 ok
+2026-11-19T12:16:27.043 | SELFTEST   f8 tilt_deg     exp=4.49774265 got=4.49774313 rel=1.06e-07 ok
+2026-11-19T12:16:27.043 | SELFTEST win=6 PASS
+2026-11-19T12:16:27.044 | SELFTEST win=7 exp_prob=0.0369046960 got_prob=0.0369047410 abs_diff=4.47e-08 exp_trig=0 got_trig=0
+2026-11-19T12:16:27.045 | SELFTEST   f0 max_mag      exp=7.25889874 got=7.25889874 rel=0.00e-308 ok
+2026-11-19T12:16:27.045 | SELFTEST   f1 min_mag      exp=0.175821260 got=0.175821275 rel=8.48e-08 ok
+2026-11-19T12:16:27.046 | SELFTEST   f2 mean_mag     exp=1.39008152 got=1.39008129 rel=1.72e-07 ok
+2026-11-19T12:16:27.046 | SELFTEST   f3 std_mag      exp=1.59280348 got=1.59280348 rel=0.00e-308 ok
+2026-11-19T12:16:27.047 | SELFTEST   f4 range_mag    exp=7.08307743 got=7.08307743 rel=0.00e-308 ok
+2026-11-19T12:16:27.047 | SELFTEST   f5 max_jerk     exp=4.65916252 got=4.65916300 rel=1.02e-07 ok
+2026-11-19T12:16:27.048 | SELFTEST   f6 std_mag_post exp=1.67958033 got=1.67958021 rel=7.10e-08 ok
+2026-11-19T12:16:27.048 | SELFTEST   f7 count_low    exp=20.0000000 got=20.0000000 rel=0.00e-308 ok
+2026-11-19T12:16:27.049 | SELFTEST   f8 tilt_deg     exp=4.82219887 got=4.82219410 rel=0.99e-06 ok
+2026-11-19T12:16:27.049 | SELFTEST win=7 PASS
+2026-11-19T12:16:27.050 | SELFTEST win=8 exp_prob=0.00341860400 got_prob=0.00341860300 abs_diff=0.93e-09 exp_trig=0 got_trig=0
+2026-11-19T12:16:27.051 | SELFTEST   f0 max_mag      exp=1.00255275 got=1.00255275 rel=0.00e-308 ok
+2026-11-19T12:16:27.051 | SELFTEST   f1 min_mag      exp=0.943517864 got=0.943517923 rel=6.32e-08 ok
+2026-11-19T12:16:27.052 | SELFTEST   f2 mean_mag     exp=0.977282047 got=0.977282107 rel=6.10e-08 ok
+2026-11-19T12:16:27.052 | SELFTEST   f3 std_mag      exp=0.00907976600 got=0.00907976400 rel=2.05e-07 ok
+2026-11-19T12:16:27.053 | SELFTEST   f4 range_mag    exp=0.0590348620 got=0.0590348240 rel=6.31e-07 ok
+2026-11-19T12:16:27.053 | SELFTEST   f5 max_jerk     exp=0.0220502190 got=0.0220502020 rel=7.60e-07 ok
+2026-11-19T12:16:27.054 | SELFTEST   f6 std_mag_post exp=0.00537757300 got=0.00537757600 rel=4.33e-07 ok
+2026-11-19T12:16:27.055 | SELFTEST   f7 count_low    exp=0.00000000e-308 got=0.00000000e-308 rel=0.00e-308 ok
+2026-11-19T12:16:27.055 | SELFTEST   f8 tilt_deg     exp=11.2313890 got=11.2313881 rel=8.49e-08 ok
+2026-11-19T12:16:27.055 | SELFTEST win=8 PASS
+2026-11-19T12:16:27.057 | SELFTEST win=9 exp_prob=0.171104416 got_prob=0.171104431 abs_diff=1.49e-08 exp_trig=0 got_trig=0
+2026-11-19T12:16:27.057 | SELFTEST   f0 max_mag      exp=1.15220332 got=1.15220344 rel=1.03e-07 ok
+2026-11-19T12:16:27.058 | SELFTEST   f1 min_mag      exp=0.848032951 got=0.848032951 rel=0.00e-308 ok
+2026-11-19T12:16:27.058 | SELFTEST   f2 mean_mag     exp=0.980210006 got=0.980210066 rel=6.08e-08 ok
+2026-11-19T12:16:27.059 | SELFTEST   f3 std_mag      exp=0.0495212750 got=0.0495212750 rel=0.00e-308 ok
+2026-11-19T12:16:27.059 | SELFTEST   f4 range_mag    exp=0.304170430 got=0.304170489 rel=1.96e-07 ok
+2026-11-19T12:16:27.060 | SELFTEST   f5 max_jerk     exp=0.165592447 got=0.165592432 rel=9.00e-08 ok
+2026-11-19T12:16:27.060 | SELFTEST   f6 std_mag_post exp=0.0378140620 got=0.0378140660 rel=9.85e-08 ok
+2026-11-19T12:16:27.061 | SELFTEST   f7 count_low    exp=0.00000000e-308 got=0.00000000e-308 rel=0.00e-308 ok
+2026-11-19T12:16:27.061 | SELFTEST   f8 tilt_deg     exp=65.8281937 got=65.8281937 rel=0.00e-308 ok
+2026-11-19T12:16:27.062 | SELFTEST win=9 PASS
+2026-11-19T12:16:27.063 | SELFTEST win=10 exp_prob=0.0103052200 got_prob=0.0103052100 abs_diff=1.02e-08 exp_trig=0 got_trig=0
+2026-11-19T12:16:27.063 | SELFTEST   f0 max_mag      exp=1.46203542 got=1.46203542 rel=0.00e-308 ok
+2026-11-19T12:16:27.064 | SELFTEST   f1 min_mag      exp=0.308625400 got=0.308625430 rel=9.66e-08 ok
+2026-11-19T12:16:27.064 | SELFTEST   f2 mean_mag     exp=0.994085193 got=0.994085610 rel=4.20e-07 ok
+2026-11-19T12:16:27.065 | SELFTEST   f3 std_mag      exp=0.202016607 got=0.202016592 rel=7.38e-08 ok
+2026-11-19T12:16:27.065 | SELFTEST   f4 range_mag    exp=1.15341008 got=1.15340996 rel=1.03e-07 ok
+2026-11-19T12:16:27.066 | SELFTEST   f5 max_jerk     exp=0.306476504 got=0.306476533 rel=9.72e-08 ok
+2026-11-19T12:16:27.066 | SELFTEST   f6 std_mag_post exp=0.175291628 got=0.175291613 rel=8.50e-08 ok
+2026-11-19T12:16:27.067 | SELFTEST   f7 count_low    exp=4.00000000 got=4.00000000 rel=0.00e-308 ok
+2026-11-19T12:16:27.067 | SELFTEST   f8 tilt_deg     exp=5.66935444 got=5.66935539 rel=1.68e-07 ok
+2026-11-19T12:16:27.068 | SELFTEST win=10 PASS
+2026-11-19T12:16:27.069 | SELFTEST win=11 exp_prob=0.00140404300 got_prob=0.00140404300 abs_diff=3.49e-10 exp_trig=0 got_trig=0
+2026-11-19T12:16:27.069 | SELFTEST   f0 max_mag      exp=1.00953960 got=1.00953960 rel=0.00e-308 ok
+2026-11-19T12:16:27.070 | SELFTEST   f1 min_mag      exp=0.987584412 got=0.987584412 rel=0.00e-308 ok
+2026-11-19T12:16:27.070 | SELFTEST   f2 mean_mag     exp=0.999338269 got=0.999338388 rel=1.19e-07 ok
+2026-11-19T12:16:27.071 | SELFTEST   f3 std_mag      exp=0.00449909900 got=0.00449909600 rel=6.21e-07 ok
+2026-11-19T12:16:27.072 | SELFTEST   f4 range_mag    exp=0.0219551570 got=0.0219551920 rel=1.61e-06 ok
+2026-11-19T12:16:27.072 | SELFTEST   f5 max_jerk     exp=0.0162645840 got=0.0162646170 rel=2.06e-06 ok
+2026-11-19T12:16:27.073 | SELFTEST   f6 std_mag_post exp=0.00415873700 got=0.00415873800 rel=1.12e-07 ok
+2026-11-19T12:16:27.073 | SELFTEST   f7 count_low    exp=0.00000000e-308 got=0.00000000e-308 rel=0.00e-308 ok
+2026-11-19T12:16:27.074 | SELFTEST   f8 tilt_deg     exp=0.616185427 got=0.616185188 rel=3.87e-07 ok
+2026-11-19T12:16:27.074 | SELFTEST win=11 PASS
+2026-11-19T12:16:27.074 | SELFTEST seg=0 std=0.01049 mean=0.99948 exp_still=1 got_still=1 PASS
+2026-11-19T12:16:27.075 | SELFTEST seg=1 std=0.01088 mean=1.00053 exp_still=1 got_still=1 PASS
+2026-11-19T12:16:27.075 | SELFTEST seg=2 std=0.01019 mean=1.00096 exp_still=1 got_still=1 PASS
+2026-11-19T12:16:27.076 | SELFTEST seg=3 std=0.43875 mean=1.02522 exp_still=0 got_still=0 PASS
+2026-11-19T12:16:27.076 | SELFTEST seg=4 std=0.44975 mean=1.01738 exp_still=0 got_still=0 PASS
+2026-11-19T12:16:27.077 | SELFTEST seg=5 std=0.45416 mean=0.98567 exp_still=0 got_still=0 PASS
+2026-11-19T12:16:27.079 | SELFTEST worst_rel_per_feature: max_mag=1.03e-07 min_mag=9.66e-08 mean_mag=4.20e-07 std_mag=6.21e-07 range_mag=1.61e-06 max_jerk=2.06e-06 std_mag_post=4.33e-07 count_low=0.00e-308 tilt_deg=0.99e-06
+2026-11-19T12:16:27.148 | SELFTEST time features+LR      mean=554.6 us max=592 us (over 100 runs)
+2026-11-19T12:16:27.148 | SELFTEST time features         mean=351.3 us max=388 us (over 100 runs)
+2026-11-19T12:16:27.148 | SELFTEST time LR               mean=203.3 us max=235 us (over 100 runs)
+2026-11-19T12:16:27.149 | SELFTEST SUMMARY windows 12/12 still_segments 6/6 PASS
+2026-11-19T12:16:27.149 | ### DONE s
+2026-11-19T12:16:27.149 | HOST end marker=yes resets=0 reopens=0
